@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+     <LinearLayout
+            android:id="@+id/myTripBackBtnCnt"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:orientation="horizontal" 
+            android:background="@drawable/top_bar">
+
+            <ImageButton
+                android:id="@+id/frequencyBackBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/list_selector_holo_light"
+                android:src="@drawable/back" />
+
+            
+        </LinearLayout>
+    <ListView
+        android:id="@+id/frequencyListView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

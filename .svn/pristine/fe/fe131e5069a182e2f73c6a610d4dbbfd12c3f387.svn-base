@@ -1,0 +1,242 @@
+package com.kartag.persistence.model.bo;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+
+import com.facebook.model.GraphUser;
+
+public class User {
+
+	private String countryId = "11";
+	private String communityId = "";
+	private String communityEmail = "";
+	private GraphUser profile = null;
+	public static String EMPTY_COMMUNITY = "NOT_YET";
+
+	private static User self = null;
+
+	private Map<String, Pool> offersPools = new LinkedHashMap<String, Pool>();
+	private Map<String, Pool> requestsPools = new LinkedHashMap<String, Pool>();
+
+	private Map<String, Trip> friendsOffers = new LinkedHashMap<String, Trip>();
+	private Map<String, Trip> friendsOffriendsOffers = new LinkedHashMap<String, Trip>();
+	private Map<String, Trip> friendsRequests = new LinkedHashMap<String, Trip>();
+	private Map<String, Trip> friendsOfFriendsRequests = new LinkedHashMap<String, Trip>();
+	
+	private Map<String, Trip> updatedTrips = new HashMap<String, Trip>();
+	
+	private Map<String, PublishRequest> publishQueue = new HashMap<String, PublishRequest>();
+	
+	private int notifications = 0;
+
+	private Setting setting = null;
+
+	private User() {
+
+	}
+
+	public static User getInstance() {
+		if (self == null) {
+			self = new User();
+		}
+		return self;
+	}
+
+	public void createMyRequestsTree(List<Pool> poolsList) {
+
+		requestsPools = new LinkedHashMap<String, Pool>();
+
+		friendsRequests = new LinkedHashMap<String, Trip>();
+		friendsOfFriendsRequests = new LinkedHashMap<String, Trip>();
+		for (Pool p : poolsList) {
+			getRequestsPools().put(p.getId(), p);
+		}
+		if (profile == null) {
+			return;
+		}
+		for (Pool p : getRequestsPools().values()) {
+			for (Trip trip : p.getTrips()) {
+				trip.setStartPool(getRequestsPools().get(
+						String.valueOf(trip.getFromId())));
+				trip.setEndPool(getRequestsPools().get(
+						String.valueOf(trip.getToId())));
+				// trip.setUser(trip.getUsers().get(trip.getUid()));
+				if (profile.getFriends().containsKey(trip.getUid())) {
+
+					String mutualFriends = getProfile().getFriends().get(trip.getUid()).getMutual_friend_count();
+					trip.getUser().setMutual_friend_count(mutualFriends);
+					friendsRequests.put(trip.getId(), trip);
+				} else if (!profile.getId().equals(trip.getUid()))
+					{
+//					String mutualFriends = getProfile().getFriendsOfFriends().get(trip.getUid()).getMutual_friend_count();
+//					trip.getUser().setMutual_friend_count(mutualFriends);
+					friendsOfFriendsRequests.put(trip.getId(), trip);
+				}
+
+			}
+		}
+
+	}
+	
+	public void createMyOffersTree(List<Pool> poolsList) {
+
+		offersPools = new LinkedHashMap<String, Pool>();
+
+		friendsOffers = new LinkedHashMap<String, Trip>();
+		friendsOffriendsOffers = new LinkedHashMap<String, Trip>();
+		for (Pool p : poolsList) {
+			getOffersPools().put(p.getId(), p);
+		}
+		if (profile == null) {
+			return;
+		}
+		for (Pool p : getOffersPools().values()) {
+			for (Trip trip : p.getTrips()) {
+				trip.setStartPool(getOffersPools().get(
+						String.valueOf(trip.getFromId())));
+				trip.setEndPool(getOffersPools().get(
+						String.valueOf(trip.getToId())));
+				// trip.setUser(trip.getUsers().get(trip.getUid()));
+				if (profile.getFriends().size() > 0)
+				if (profile.getFriends().containsKey(trip.getUid())) {
+
+					String mutualFriends = getProfile().getFriends().get(trip.getUid()).getMutual_friend_count();
+					trip.getUser().setMutual_friend_count(mutualFriends);
+					friendsOffers.put(trip.getId(), trip);
+				} else if (!profile.getId().equals(trip.getUid()))
+				{
+//					String mutualFriends = getProfile().getFriendsOfFriends().get(trip.getUid()).getMutual_friend_count();
+//					trip.getUser().setMutual_friend_count(mutualFriends);
+					friendsOffriendsOffers.put(trip.getId(), trip);
+				}
+
+			}
+		}
+
+	}
+
+	public GraphUser getProfile() {
+		return this.profile;
+	}
+
+	public void setProfile(GraphUser profile) {
+		this.profile = profile;
+	}
+
+	public Map<String, Trip> getFriendsOffers() {
+		return friendsOffers;
+	}
+
+	public void setFriendsOffers(LinkedHashMap<String, Trip> friendsOffers) {
+		this.friendsOffers = friendsOffers;
+	}
+
+	public Map<String, Trip> getFriendsOfFriendsOffers() {
+		return friendsOffriendsOffers;
+	}
+
+	public void setFriendsOfFriendsOffers(
+			LinkedHashMap<String, Trip> friendsOfFriendsOffers) {
+		this.friendsOffriendsOffers = friendsOfFriendsOffers;
+	}
+
+	public Map<String, Trip> getFriendsRequests() {
+		return friendsRequests;
+	}
+
+	public void setFriendsRequests(LinkedHashMap<String, Trip> friendsRequests) {
+		this.friendsRequests = friendsRequests;
+	}
+
+	public Map<String, Trip> getFriendsOfFriendsRequests() {
+		return friendsOfFriendsRequests;
+	}
+
+	public void setFriendsOfFriendsRequests(
+			LinkedHashMap<String, Trip> friendsOfFriendsRequests) {
+		this.friendsOfFriendsRequests = friendsOfFriendsRequests;
+	}
+
+	public void setOffersPools(LinkedHashMap<String, Pool> offersPools) {
+		this.offersPools = offersPools;
+	}
+
+	public void setRequestsPools(LinkedHashMap<String, Pool> requestsPools) {
+		this.requestsPools = requestsPools;
+	}
+
+	public Setting getSetting() {
+		return setting;
+	}
+
+	public void setSetting(Setting setting) {
+		this.setting = setting;
+	}
+
+	public Map<String, Pool> getOffersPools() {
+		return offersPools;
+	}
+
+	public void setOffersPools(Map<String, Pool> offersPools) {
+		this.offersPools = offersPools;
+	}
+
+	public Map<String, Pool> getRequestsPools() {
+		return requestsPools;
+	}
+
+	public void setRequestsPools(Map<String, Pool> requestsPools) {
+		this.requestsPools = requestsPools;
+	}
+
+	public int getNotifications() {
+		return notifications;
+	}
+
+	public void setNotifications(int notifications) {
+		this.notifications = notifications;
+	}
+
+	public Map<String, Trip> getUpdatedTrips() {
+		return updatedTrips;
+	}
+
+	public void setUpdatedTrips(Map<String, Trip> updatedTrips) {
+		this.updatedTrips = updatedTrips;
+	}
+
+	public Map<String, PublishRequest> getPublishQueue() {
+		return publishQueue;
+	}
+
+	public void setPublishQueue(Map<String, PublishRequest> publishQueue) {
+		this.publishQueue = publishQueue;
+	}
+
+	public String getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(String countryId) {
+		this.countryId = countryId;
+	}
+
+	public String getCommunityId() {
+		return communityId;
+	}
+
+	public void setCommunityId(String communityId) {
+		this.communityId = communityId;
+	}
+
+	public String getCommunityEmail() {
+		return communityEmail;
+	}
+
+	public void setCommunityEmail(String communityEmail) {
+		this.communityEmail = communityEmail;
+	}
+}

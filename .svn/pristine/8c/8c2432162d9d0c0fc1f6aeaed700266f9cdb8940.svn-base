@@ -1,0 +1,69 @@
+package com.kartag.gui.presentation;
+
+import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ListView;
+
+import com.kartag.gui.AbstractScreen;
+import com.kartag.gui.MainActivity;
+import com.kartag.gui.R;
+import com.kartag.gui.adapter.TripFrequencyAdapter;
+
+public class FrequencyList extends AbstractScreen{
+
+	private ListView listView1;
+	private String tripType = "";
+	public FrequencyList(FragmentActivity activity, String tripType) {
+		super(activity);
+		this.tripType = tripType;
+	}
+
+	@Override
+	public void loadScreen() {
+		activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		activity.setContentView(R.layout.trip_frequency_layout);
+		listView1 = (ListView) activity.findViewById(R.id.frequencyListView);
+		ImageButton back = (ImageButton) activity.findViewById(
+				R.id.frequencyBackBtn);
+		back.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				activity.onBackPressed();
+			}
+
+		});
+		TripFrequencyAdapter adapter = new TripFrequencyAdapter(activity, R.layout.trip_frequency_row);
+		listView1.setAdapter(adapter);
+		setOnClickAction();
+	}
+	private void setOnClickAction() {
+		listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+					long arg3) {
+				Intent intent = new Intent(activity, MainActivity.class);
+				intent.putExtra(MainActivity.nextScreenParam, MainActivity.ADD_TRIP_SCREEN_ID);
+				if(position == 0)
+				{
+					intent.putExtra("frequency", "once");
+				}
+				else
+				{
+					intent.putExtra("frequency", "weekly");
+				}
+				intent.putExtra("tripType", tripType);
+				activity.startActivity(intent);
+				
+			}
+
+		});
+		
+	}
+
+}

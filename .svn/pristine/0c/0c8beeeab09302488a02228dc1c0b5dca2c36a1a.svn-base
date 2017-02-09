@@ -1,0 +1,178 @@
+package com.kartag.persistence.dao.bd;
+
+import java.util.ArrayList;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.kartag.persistence.dao.BaseDao;
+import com.kartag.persistence.model.IModel;
+import com.kartag.persistence.model.bo.Setting;
+
+public class SettingDao extends BaseDao {
+
+	private static final String DATABASE_TABLE = "SETTING";
+
+	public static final String KEY = "key";
+	public static final String VALUE = "value";
+
+	public static final String PUBLISH_TO_WALL = "PUBLISH";
+	public static final String LOG_OUT = "LOGOUT";
+	public static final String COMMUNITY_ID = "COMMUNITY_ID";
+	private static final String DATABASE_CREATE = "create table IF NOT EXISTS SETTING (KEY text primary key not null, "
+			+ "VALUE text not null);";
+
+	public SettingDao(SQLiteDatabase db) {
+		super(db);
+		db.execSQL(DATABASE_CREATE);
+	}
+
+	@Override
+	public IModel[] executeQuery(IModel baseObj) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<IModel> list(IModel baseObj) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean store(IModel baseObj, ArrayList<Object> insertedValues)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		Setting setting = (Setting) baseObj;
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(KEY, PUBLISH_TO_WALL);
+		initialValues.put(VALUE, setting.getPublish());
+
+		ContentValues logOutValue = new ContentValues();
+		logOutValue.put(KEY, LOG_OUT);
+		logOutValue.put(VALUE, setting.getLogout());
+
+		ContentValues communityIdValue = new ContentValues();
+		communityIdValue.put(KEY, COMMUNITY_ID);
+		communityIdValue.put(VALUE, setting.getCommunityId());
+		return database.insert(DATABASE_TABLE, null, initialValues) > 0
+				&& database.insert(DATABASE_TABLE, null, logOutValue) > 0
+				&& database.insert(DATABASE_TABLE, null, communityIdValue) > 0;
+	}
+	
+	public boolean storeCommunityId(IModel baseObj, ArrayList<Object> insertedValues)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		Setting setting = (Setting) baseObj;
+		ContentValues communityIdValue = new ContentValues();
+		communityIdValue.put(KEY, COMMUNITY_ID);
+		communityIdValue.put(VALUE, setting.getCommunityId());
+		return database.insert(DATABASE_TABLE, null, communityIdValue) > 0;
+	}
+
+
+	@Override
+	public boolean delete(IModel baseObj) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean update(IModel baseObj) throws SQLException {
+		// TODO Auto-generated method stub
+		Setting setting = (Setting) baseObj;
+		ContentValues args = new ContentValues();
+		args.put(KEY, PUBLISH_TO_WALL);
+		args.put(VALUE, LOG_OUT);
+
+		ContentValues logOutValue = new ContentValues();
+		logOutValue.put(KEY, LOG_OUT);
+		logOutValue.put(VALUE, setting.getLogout());
+		return database.update(DATABASE_TABLE, args, KEY + "="
+				+ PUBLISH_TO_WALL, null) > 0
+				&& database.update(DATABASE_TABLE, logOutValue, KEY + "="
+						+ LOG_OUT, null) > 0;
+	}
+
+	@Override
+	public boolean deleteAllRows(IModel baseObj) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public IModel get(IModel baseObj, Object pk) throws SQLException {
+		// TODO Auto-generated method stub
+		Cursor mCursor = database.query(true, DATABASE_TABLE, new String[] {
+				KEY, VALUE }, KEY + "=" + (String) pk, null, null, null, null,
+				null);
+		if (mCursor != null) {
+			mCursor.moveToFirst();
+		} else {
+			return null;
+		}
+		Setting setting = new Setting();
+		setting.setPublish(mCursor.getString(1));
+		mCursor.moveToNext();
+		setting.setLogout(mCursor.getString(1));
+		mCursor.moveToNext();
+		setting.setCommunityId(mCursor.getString(1));
+		return setting;
+	}
+
+	public IModel get(IModel baseObj) throws SQLException {
+		// TODO Auto-generated method stub
+		Cursor mCursor = database.query(true, DATABASE_TABLE, new String[] {
+				KEY, VALUE }, null, null, null, null, null, null);
+		if (mCursor != null && mCursor.getCount() > 0) {
+			mCursor.moveToFirst();
+		} else {
+			return null;
+		}
+
+		Setting setting = new Setting();
+		if (mCursor.getCount() == 2) {
+			setting.setPublish(mCursor.getString(1));
+			mCursor.moveToNext();
+			setting.setLogout(mCursor.getString(1));
+			storeCommunityId(baseObj, null);
+		} else if (mCursor.getCount() == 3) {
+			setting.setPublish(mCursor.getString(1));
+			mCursor.moveToNext();
+			setting.setLogout(mCursor.getString(1));
+			mCursor.moveToNext();
+			setting.setCommunityId(mCursor.getString(1));
+		}
+		return setting;
+	}
+
+	public boolean updatePublishStatus(String publish) throws SQLException {
+		// TODO Auto-generated method stub
+		ContentValues args = new ContentValues();
+		// args.put(KEY, PUBLISH_TO_WALL);
+		args.put(VALUE, publish);
+		return database.update(DATABASE_TABLE, args, KEY + "='"
+				+ PUBLISH_TO_WALL + "'", null) > 0;
+	}
+
+	public boolean updateLogoutStatus(String logOut) throws SQLException {
+		// TODO Auto-generated method stub
+		ContentValues args = new ContentValues();
+		// args.put(KEY, LOG_OUT);
+		args.put(VALUE, logOut);
+		return database.update(DATABASE_TABLE, args,
+				KEY + "='" + LOG_OUT + "'", null) > 0;
+	}
+
+	public boolean updateCommunityId(String communityId) throws SQLException {
+		// TODO Auto-generated method stub
+		ContentValues args = new ContentValues();
+		// args.put(KEY, LOG_OUT);
+		args.put(VALUE, communityId);
+		return database.update(DATABASE_TABLE, args, KEY + "='" + COMMUNITY_ID
+				+ "'", null) > 0;
+	}
+
+}

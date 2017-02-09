@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:background="@drawable/home_bg" >
+
+    <!-- Have aride button -->
+
+    <ImageView
+        android:id="@+id/btnHaveAride"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip" 
+        android:src="@drawable/logo"/>
+
+   <com.facebook.widget.LoginButton
+        android:id="@+id/authButton"
+        android:layout_width="fill_parent"
+        android:layout_height="35dip"
+        android:layout_marginTop="30dip"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:textColor="#FFFFFF"  
+        android:textAlignment="gravity"
+        android:gravity="center"
+        android:background="#3B5998"
+        />
+
+</LinearLayout>

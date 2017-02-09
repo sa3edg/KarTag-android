@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+     <RelativeLayout
+            android:id="@+id/myTripBackBtnCnt"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:background="@drawable/top_bar"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:id="@+id/backCnt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:id="@+id/backBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/back" />
+
+                <ImageView
+                    android:id="@+id/spaceImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/sperator" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/tripTypeTitle"
+                android:textColor="#FFFFFF"
+                android:textAlignment="gravity" />
+        </RelativeLayout>
+        
+   
+       <ImageView
+                    android:id="@+id/logoIm"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/logo" 
+                    android:layout_above="@+id/typeCnt"/>
+            <LinearLayout
+                android:id="@+id/typeCnt"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal" 
+                android:layout_centerInParent="true">
+
+                <ImageButton
+                    android:id="@+id/weeklyBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/weekly" 
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:id="@+id/onceBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/once" 
+                    android:layout_marginLeft="1dp"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
+    
+
+</RelativeLayout>

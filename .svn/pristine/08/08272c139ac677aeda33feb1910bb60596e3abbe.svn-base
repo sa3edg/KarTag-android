@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+     >
+
+	<!--  ListRow Left sied Thumbnail image -->
+	<LinearLayout android:id="@+id/senderImg" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="3dip"		
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/image_bg" 
+	    android:layout_marginRight="5dip">
+        
+		<ImageView     
+			android:id="@+id/tripOwnerImage"   
+	        android:layout_width="50dip"
+	        android:layout_height="50dip"/>
+        
+	</LinearLayout>
+    
+	<!-- Title -->
+    <TextView
+        android:id="@+id/tripOwnerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/senderImg"
+        android:layout_toRightOf="@+id/senderImg"
+        android:textColor="#040404"
+        android:typeface="sans" 
+        android:textSize="15dip"
+        android:layout_marginTop="5dip"
+        android:textStyle="bold"/>
+
+	<!-- Details -->
+    <TextView
+        android:id="@+id/tripInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tripOwnerName"
+        android:textColor="#0000FF"
+        android:textSize="10dip"
+        android:layout_marginTop="10dip"
+        android:layout_toRightOf="@+id/senderImg"/>
+   
+
+	 <LinearLayout android:id="@+id/rejectkCnt" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+	    android:layout_marginRight="10dip"
+	    
+	    >
+     
+      
+     
+      <ImageButton
+        android:id="@+id/acceptTrip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/accept"
+        android:visibility="gone"
+        />
+      <ImageButton
+        android:id="@+id/rejectTrip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/cancel"
+        android:visibility="gone"
+        />
+        
+	 </LinearLayout>
+	
+    <!--  <LinearLayout android:id="@+id/rejectkCnt" 
+		android:layout_width="30dip"
+		android:layout_height="55dip"
+        android:layout_alignParentRight="true"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="0dip"
+        android:layout_marginBottom="0dip"
+	    android:layout_marginRight="5dip"
+	    
+	    >
+        
+     <ImageButton
+        android:id="@+id/rejectTrip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="10dip"
+        android:src="@drawable/cancel"
+        android:visibility="gone"
+        />
+        
+	</LinearLayout>
+	
+    <LinearLayout android:id="@+id/messageTimeCnt" 
+		android:layout_width="30dip"
+		android:layout_height="55dip"
+        android:layout_toLeftOf="@+id/rejectkCnt"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="0dip"
+        android:layout_marginBottom="0dip"
+	    android:layout_marginRight="5dip"
+	    
+	    >
+        
+		<ImageButton
+        android:id="@+id/acceptTrip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="10dip"
+        android:src="@drawable/accept"
+        android:visibility="gone"
+        />
+        
+	</LinearLayout>-->
+	
+    <LinearLayout android:id="@+id/tripTimeCnt" 
+		android:layout_width="120dip"
+		android:layout_height="55dip"
+        android:layout_alignParentRight="true"        
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="0dip"
+	    android:layout_marginRight="5dip"
+	    >
+        
+        <Button     
+			android:id="@+id/statusImg"   
+        android:layout_width="wrap_content"
+        android:layout_height="30dip"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:background="@drawable/status"
+        android:layout_marginTop="2dip"
+        android:text="@string/status"
+        android:visibility="gone"
+        />
+     
+     <TextView
+        android:id="@+id/Status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textColor="#0000FF"
+        android:layout_weight="1"
+        android:layout_marginTop="5dip"
+        android:textStyle="normal"
+        android:visibility="gone"
+        android:layout_marginBottom="5dip"
+        />
+        
+	</LinearLayout>
+    
+     
+    
+</RelativeLayout>

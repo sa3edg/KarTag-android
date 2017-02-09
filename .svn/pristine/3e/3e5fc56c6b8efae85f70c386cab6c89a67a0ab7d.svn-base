@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.kartag.gui"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+     >
+    
+      <!--  <FrameLayout
+                android:id="@+id/messagesIndicatorFrame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+               android:layout_centerInParent="true"
+               android:layout_marginBottom="20dp">-->
+
+            <TextView
+                android:id="@+id/messagesIndicatorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/myInbox"/>               
+
+                <TextView
+                    android:id="@+id/messagesNotification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_toRightOf="@id/messagesIndicatorTitle"
+                    android:background="@drawable/actionbar_background"
+                    android:gravity="center"
+                    android:minWidth="15dp"
+                    android:paddingLeft="1dp"
+                    android:paddingRight="1dp"
+                    android:textColor="#fff"
+                    android:textStyle="bold" 
+                    android:text="3"/>
+            <!--  </FrameLayout>-->
+       
+ </RelativeLayout>

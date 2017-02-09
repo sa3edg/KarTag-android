@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+    android:layout_marginBottom="10dp"
+     >
+
+	<!--  ListRow Left sied Thumbnail image -->
+	<LinearLayout android:id="@+id/senderImg" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="3dip"		
+        android:layout_alignParentLeft="true"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true"
+	    android:layout_marginRight="5dip">
+        
+		<ImageView     
+			android:id="@+id/tripOwnerImage"   
+	        android:layout_width="50dip"
+	        android:layout_height="50dip"
+	        />
+        
+	</LinearLayout>
+    
+	<!-- Title -->
+    <TextView
+        android:id="@+id/tripOwnerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/senderImg"
+        android:layout_toRightOf="@+id/senderImg"
+        android:textColor="@color/nameTextColor"
+        android:textSize="@dimen/tripListNameSize"
+        android:typeface="sans" 
+        android:layout_marginTop="5dip"
+        android:textStyle="bold"/>
+
+	<!-- Details -->
+    <TextView
+        android:id="@+id/tripInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tripOwnerName"
+        android:textColor="#000000"
+        android:textSize="@dimen/tripListTimeSize"
+        android:layout_marginTop="10dip"
+        android:layout_toRightOf="@+id/senderImg"/>
+    <TextView
+        android:id="@+id/tripTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tripInfo"
+        android:textColor="#000000"
+        android:textSize="@dimen/tripListTimeSize"
+        android:layout_marginTop="10dip"
+        android:layout_toRightOf="@+id/senderImg"
+        android:layout_marginBottom="10dp"/>
+   
+
+    <LinearLayout
+        android:id="@+id/rejectkCnt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dip"
+        android:layout_marginTop="0dip"
+        android:layout_below="@+id/tripTime"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" 
+        android:layout_centerHorizontal="true">
+
+        <ImageButton
+            android:id="@+id/acceptTrip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dip"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/accept"
+            android:background="@drawable/list_selector_holo_light"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="20dp"
+            android:visibility="invisible"
+            />
+        <ImageButton
+            android:id="@+id/rejectTrip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dip"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/reject"
+            android:background="@drawable/list_selector_holo_light"
+            android:visibility="invisible"
+            android:layout_marginRight="20dp"
+            />
+    </LinearLayout>
+</RelativeLayout>

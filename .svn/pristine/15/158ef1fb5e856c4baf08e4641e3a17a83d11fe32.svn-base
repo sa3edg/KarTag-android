@@ -1,0 +1,618 @@
+package com.kartag.gui.presentation;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.Dialog;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
+
+import com.kartag.client.common.Request;
+import com.kartag.client.common.Response;
+import com.kartag.client.processing.ResponseProcessingHelper;
+import com.kartag.controller.OrderCoordinator;
+import com.kartag.controller.RequestFactory;
+import com.kartag.gui.AbstractScreen;
+import com.kartag.gui.R;
+import com.kartag.notification.gcm.GCMIntentService;
+import com.kartag.persistence.dao.PersistenceSessionFactory;
+import com.kartag.persistence.dao.bd.SettingDao;
+import com.kartag.persistence.model.bo.Community;
+import com.kartag.persistence.model.bo.Setting;
+import com.kartag.persistence.model.bo.User;
+import com.kartag.util.UserUtils;
+
+public class SettingScreen extends AbstractScreen{
+
+	private SettingDao settingDao;
+	private List<Community> communities;
+	private String communityId = "";
+	private Dialog dialog;
+	private ToggleButton community;
+	public SettingScreen(FragmentActivity activity) {
+		super(activity);
+		this.activity = activity;
+	}
+
+	@Override
+	public void loadScreen() {
+		activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		activity.setContentView(R.layout.setting_layout);
+		settingDao = new SettingDao(PersistenceSessionFactory.createSessionInstance(activity).currentSession());
+		ToggleButton publish = (ToggleButton) activity.findViewById(R.id.publishToggle);
+
+		//RelativeLayout communityCnt = (RelativeLayout) activity.findViewById(R.id.communityCnt);
+		community = (ToggleButton) activity.findViewById(R.id.communityToggle);
+		SettingDao dao = new SettingDao(PersistenceSessionFactory
+				.createSessionInstance(activity).currentSession());
+		Setting setting = (Setting) dao.get(new Setting());
+		if (setting != null && User.EMPTY_COMMUNITY.equals(User.getInstance().getSetting().getCommunityId())) {
+			community.setChecked(false);
+		}else{
+			community.setChecked(true);
+		}
+		
+		if(User.getInstance().getSetting().getPublish().equals(Setting.ON))
+		{
+			publish.setChecked(true);
+		}
+		else if(User.getInstance().getSetting().getPublish().equals(Setting.OFF))
+		{
+			publish.setChecked(false);
+		}
+		publish.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+		    	try
+		    	{
+		        if(isChecked)
+		        {
+		        	settingDao.updatePublishStatus(Setting.ON);
+		        	if(User.getInstance().getSetting() != null)
+		        	{
+		        		User.getInstance().getSetting().setPublish(Setting.ON);
+		        	}
+		        }
+		        else
+		        {
+		        	settingDao.updatePublishStatus(Setting.OFF);
+		        	if(User.getInstance().getSetting() != null)
+		        	{
+		        		User.getInstance().getSetting().setPublish(Setting.OFF);
+		        	}
+		        }
+		    	}
+		    	catch(Exception ex)
+		    	{
+		    		Log.e("Error", ex.getMessage());
+		    	}
+		    }
+		});
+		
+		ToggleButton logOut = (ToggleButton) activity.findViewById(R.id.logoutToggle);
+
+		if(User.getInstance().getSetting().getLogout().equals(Setting.ON))
+		{
+			logOut.setChecked(true);
+		}
+		else if(User.getInstance().getSetting().getLogout().equals(Setting.OFF))
+		{
+			logOut.setChecked(false);
+		}
+		logOut.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+		    	 if(isChecked)
+			        {
+			        	settingDao.updateLogoutStatus(Setting.ON);
+			        	if(User.getInstance().getSetting() != null)
+			        	{
+			        		User.getInstance().getSetting().setLogout(Setting.ON);
+			        	}
+			        }
+			        else
+			        {
+			        	settingDao.updateLogoutStatus(Setting.OFF);
+			        	if(User.getInstance().getSetting() != null)
+			        	{
+			        		User.getInstance().getSetting().setLogout(Setting.OFF);
+			        	}
+			        }
+		    }
+		});
+		
+		community.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		    	if(isChecked)
+		        {
+	    		    //show register dialog
+		    		showProgressBar();
+	    		 	getCommunityRequest();
+	    		 	//community.setChecked(false);
+		        }
+		        else
+		        {
+		        	settingDao.updateCommunityId(User.EMPTY_COMMUNITY);
+		        	if(User.getInstance().getSetting() != null)
+		        	{
+		        		User.getInstance().getSetting().setCommunityId(User.EMPTY_COMMUNITY);
+		        		String temp = User.getInstance().getSetting().getCommunityId();
+		        		Log.d("community id : ", temp);
+		        	}
+		        }
+		    	 
+		    }
+		});
+//		community.setOnClickListener(new OnClickListener() {
+//       	 
+//			public void onClick(View arg0) {
+//				if(community.isChecked())
+//		        {
+//	    		    //show register dialog
+//	    		 	getCommunityRequest();
+//	    		 	community.setChecked(false);
+//		        }
+//		        else
+//		        {
+//		        	settingDao.updateCommunityId(User.EMPTY_COMMUNITY);
+//		        	if(User.getInstance().getSetting() != null)
+//		        	{
+//		        		User.getInstance().getSetting().setCommunityId(User.EMPTY_COMMUNITY);
+//		        	}
+//		        }
+//			}
+// 
+//		});
+		ImageButton back = (ImageButton) activity.findViewById(R.id.settingbackBackBtn);
+		back.setOnClickListener(new OnClickListener() {
+        	 
+			public void onClick(View arg0) {
+				activity.onBackPressed();
+			}
+ 
+		});
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void postExecution(Response response) {
+		try {
+			if (response.getRequestName()
+					.equals(Request.CHANGE_PASSWORD)) {
+				boolean result = (Boolean) ResponseProcessingHelper
+						.getInstance().handleResponse(
+								Request.CHANGE_PASSWORD,
+								(String) response.getResponse());
+				if(result){
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.passwordChangeSucceed),
+							Toast.LENGTH_SHORT).show();
+				}else{
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.passwordChangeFailed),
+							Toast.LENGTH_SHORT).show();
+				}
+				
+			}else if (response.getRequestName()
+					.equals(Request.FORGET_PASSWORD)) {
+				boolean result = (Boolean) ResponseProcessingHelper
+						.getInstance().handleResponse(
+								Request.FORGET_PASSWORD,
+								(String) response.getResponse());
+				if(result){
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.forgetChangeSucceed),
+							Toast.LENGTH_SHORT).show();
+				}else{
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.forgetChangeFailed),
+							Toast.LENGTH_SHORT).show();
+				}
+				
+			}else if (response.getRequestName()
+					.equals(Request.GET_COMMUNITIES)) {
+				this.communities = (List<Community>) ResponseProcessingHelper
+						.getInstance().handleResponse(Request.GET_COMMUNITIES,
+								(String) response.getResponse());
+				closeProgress();
+				showLoginDialog();
+			} else if (response.getRequestName().equals(
+					Request.ADD_USER_REQUEST)
+					|| response.getRequestName().equals(Request.LOGIN_ORDER)) {
+				try {
+					boolean added = (Boolean) ResponseProcessingHelper
+							.getInstance().handleResponse(
+									Request.ADD_USER_REQUEST,
+									(String) response.getResponse());
+					if (added) {
+
+						if (response.getRequestName().equals(
+								Request.LOGIN_ORDER)) {
+							SettingDao dao = new SettingDao(
+									PersistenceSessionFactory
+											.createSessionInstance(activity)
+											.currentSession());
+							User.getInstance().getSetting().setCommunityId(communityId);
+							dao.updateCommunityId(User.getInstance().getSetting()
+									.getCommunityId());
+							//community.setChecked(true);
+						}
+						if (response.getRequestName().equals(
+								Request.ADD_USER_REQUEST)){
+							community.setChecked(false);
+							Toast.makeText(
+									activity.getApplicationContext(),
+									activity.getResources().getString(
+											R.string.passwordSent),
+									Toast.LENGTH_LONG).show();
+						}
+						closeProgress();
+						dialog.dismiss();
+					} else {
+						community.setChecked(false);
+						closeProgress();
+						Toast.makeText(
+								activity.getApplicationContext(),
+								activity.getResources().getString(
+										R.string.connectionError),
+								Toast.LENGTH_SHORT).show();
+					}
+
+				} catch (Exception ex) {
+					community.setChecked(false);
+					closeProgress();
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.connectionError),
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+			
+	} catch (Exception ex) {
+		if (response.getRequestName().equals(
+				Request.ADD_USER_REQUEST)
+				|| response.getRequestName().equals(Request.LOGIN_ORDER)) {
+			community.setChecked(false);
+		}
+		closeProgress();
+		Toast.makeText(
+				activity.getApplicationContext(),
+				activity.getResources().getString(R.string.connectionError),
+				Toast.LENGTH_SHORT).show();
+	}
+
+}
+	private void getCommunityRequest(){
+		OrderCoordinator.handleOrder(this, RequestFactory
+				.createGetCommunities(User.getInstance()
+						.getCountryId()));
+	}
+	
+	private void showLoginDialog() {
+		dialog = new Dialog(activity);
+		dialog.setCancelable(false);
+//		dialog.getWindow().getDecorView()
+//				.setBackgroundResource(android.R.color.transparent);
+		dialog.setContentView(R.layout.login_dialog_layout);
+		dialog.setTitle(activity.getResources().getText(
+				R.string.loginDialogTitle));
+
+		// get the Refferences of views
+		final EditText editTextUserName = (EditText) dialog
+				.findViewById(R.id.editTextUserNameToLogin);
+		final EditText editTextPassword = (EditText) dialog
+				.findViewById(R.id.editTextPasswordToLogin);
+
+		Spinner communitiesSpinner = (Spinner) dialog
+				.findViewById(R.id.selctCommunity);
+		List<String> items = new ArrayList<String>();
+		if (communities != null) {
+			for (final Community com : communities) {
+				items.add(com.getCommunityName());
+			}
+		}
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity,
+				android.R.layout.simple_spinner_item, items);
+		communitiesSpinner.setAdapter(adapter);
+		
+
+		final String communityId = communities != null && communities.size() > 0 ? communities.get(
+				communitiesSpinner.getSelectedItemPosition()).getId() : "";
+				
+		Button btnSignIn = (Button) dialog.findViewById(R.id.buttonSignIn);
+
+		// Set On ClickListener
+		btnSignIn.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+
+				// get The User name and Password
+				if (!"".equals(editTextUserName.getText().toString())
+						&& !"".equals(editTextPassword.getText().toString())) {
+					String email = editTextUserName.getText().toString();
+					String password = editTextPassword.getText().toString();
+					SettingScreen.this.communityId = communityId;
+					logIn(email, password);
+				} else {
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.completeYouData),
+							Toast.LENGTH_SHORT).show();
+				}
+
+			}
+		});
+		
+		Button btnSignUp = (Button) dialog.findViewById(R.id.buttonSignup);
+		// Set On ClickListener
+		btnSignUp.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+				showSignUpDialog();
+			}
+		});
+		final Button cancel = (Button) dialog
+				.findViewById(R.id.buttonSignInCancel);
+		// Set On ClickListener
+		cancel.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				community.setChecked(false);
+				dialog.dismiss();
+			}
+		});
+
+		dialog.show();
+	}
+	private void showSignUpDialog() {
+		dialog = new Dialog(activity);
+		dialog.setCancelable(false);
+//		dialog.getWindow().getDecorView()
+//				.setBackgroundResource(R.drawable.home_bg);
+		dialog.setContentView(R.layout.register_dialog_layout);
+		dialog.setTitle(activity.getResources().getText(R.string.register));
+
+		// get the Refferences of views
+		final EditText editTextUserName = (EditText) dialog
+				.findViewById(R.id.editTextUserNameToLogin);
+
+		Spinner communitiesSpinner = (Spinner) dialog
+				.findViewById(R.id.selctCommunity);
+		List<String> items = new ArrayList<String>();
+		if (communities != null) {
+			for (final Community com : communities) {
+				items.add(com.getCommunityName());
+			}
+		}
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity,
+				android.R.layout.simple_spinner_item, items);
+		communitiesSpinner.setAdapter(adapter);
+
+		Button btnSignIn = (Button) dialog.findViewById(R.id.buttonSignup);
+
+		final String communityId = communities != null && communities.size() > 0 ? communities.get(
+				communitiesSpinner.getSelectedItemPosition()).getId() : "";
+		// Set On ClickListener
+		btnSignIn.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				String email = editTextUserName.getText().toString();
+				if (!"".equals(communityId)) {
+					User.getInstance().setCommunityId(communityId);
+					User.getInstance().setCommunityEmail(email);
+				}
+				if (!"".equals(editTextUserName.getText().toString())) {
+					register(User.getInstance().getCommunityId(), User
+							.getInstance().getCommunityEmail());
+				} else {
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.completeYouData),
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+
+		final Button forgotButton = (Button) dialog
+				.findViewById(R.id.buttonForgetPassword);
+		// Set On ClickListener
+		forgotButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showForgotPasswordDialog();
+			}
+		});
+
+		final Button changePassword = (Button) dialog
+				.findViewById(R.id.buttonChangePassword);
+		// Set On ClickListener
+		changePassword.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showChangePasswordDialog();
+			}
+		});
+
+		final Button cancel = (Button) dialog
+				.findViewById(R.id.buttonSignupCancel);
+		// Set On ClickListener
+		cancel.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				community.setChecked(false);
+				dialog.dismiss();
+			}
+		});
+
+		dialog.show();
+	}
+
+	private void showForgotPasswordDialog() {
+		final Dialog dialog = new Dialog(activity);
+		dialog.setCancelable(false);
+//		dialog.getWindow().getDecorView()
+//				.setBackgroundResource(android.R.color.transparent);
+		dialog.setContentView(R.layout.forgot_password_dialog_layout);
+		dialog.setTitle(activity.getResources()
+				.getText(R.string.getMyPassTitle));
+
+		// get the Refferences of views
+		final EditText editTextUserName = (EditText) dialog
+				.findViewById(R.id.editTextUserNameToLogin);
+
+		Button btnSignIn = (Button) dialog
+				.findViewById(R.id.buttonForgotPassword);
+		// Set On ClickListener
+		btnSignIn.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if (!"".equals(editTextUserName.getText().toString())) {
+					forgotPassword(editTextUserName.getText().toString());
+				} else {
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.completeYouData),
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+		final Button cancel = (Button) dialog.findViewById(R.id.buttonCancel);
+		// Set On ClickListener
+		cancel.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+			}
+		});
+
+		dialog.show();
+	}
+
+	private void showChangePasswordDialog() {
+		final Dialog dialog = new Dialog(activity);
+		dialog.setCancelable(false);
+//		dialog.getWindow().getDecorView()
+//				.setBackgroundResource(android.R.color.transparent);
+		dialog.setContentView(R.layout.change_password_dialog_layout);
+		dialog.setTitle(activity.getResources().getText(
+				R.string.changeMyPassword));
+
+		// get the Refferences of views
+		final EditText oldPassword = (EditText) dialog
+				.findViewById(R.id.oldPassword);
+		final EditText newPassword = (EditText) dialog
+				.findViewById(R.id.newPassord);
+		final EditText retypeNewPassword = (EditText) dialog
+				.findViewById(R.id.retypeNewPassord);
+
+		Button btnSignIn = (Button) dialog.findViewById(R.id.buttonSubmit);
+
+		// Set On ClickListener
+		btnSignIn.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if ("".equals(oldPassword.getText().toString())
+						|| "".equals(newPassword.getText().toString())
+						|| "".equals(retypeNewPassword.getText().toString())) {
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.completeYouData),
+							Toast.LENGTH_SHORT).show();
+				}else if(!newPassword.getText().toString().equals(retypeNewPassword.getText().toString())){
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.passwordDoesnnotMatch),
+							Toast.LENGTH_SHORT).show();
+				}else{
+					changePassword(oldPassword.getText().toString(), newPassword.getText().toString());
+				}
+			}
+		});
+
+		final Button cancel = (Button) dialog.findViewById(R.id.buttonCancel);
+		// Set On ClickListener
+		cancel.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+				dialog.dismiss();
+			}
+		});
+		dialog.show();
+	}
+	
+	private void logIn(String email, String password) {
+		closeProgress();
+		showProgressBar();
+		OrderCoordinator.handleOrder(this,
+				RequestFactory.createCommunityLoginRequest(email, password));
+	}
+
+	private void register(String communityId, String CommunityEmail) {
+		closeProgress();
+		showProgressBar();
+		OrderCoordinator.handleOrder(this, RequestFactory.createLoginRequest(
+				User.getInstance().getProfile(), GCMIntentService.REG_ID,
+				UserUtils.getInstalledUseEmail(activity), communityId,
+				CommunityEmail));
+	}
+
+	private void forgotPassword(String email) {
+		closeProgress();
+		showProgressBar();
+		OrderCoordinator.handleOrder(this,
+				RequestFactory.createForgotPasswordRequest(email));
+	}
+
+	private void changePassword(String oldPassword, String newPassword) {
+		closeProgress();
+		showProgressBar();
+		OrderCoordinator.handleOrder(this, RequestFactory
+				.createChangePasswordRequest(oldPassword, newPassword));
+	}
+
+}

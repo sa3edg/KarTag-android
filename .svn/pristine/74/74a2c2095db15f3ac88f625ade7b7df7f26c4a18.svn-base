@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.kartag.gui"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center_vertical"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/haveArideHeader"
+        android:layout_width="fill_parent"
+        android:layout_height="40dip"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" 
+        android:background="@drawable/top_bar"
+        
+        
+        >
+
+        <ImageButton
+            android:id="@+id/haveArideBackBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="5dip"
+            android:layout_marginBottom="5dip"
+            android:src="@drawable/back" 
+            android:background="@drawable/list_selector_holo_light"
+            android:layout_centerVertical="true"
+            
+            />
+        <ImageView
+                    android:id="@+id/spaceImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:layout_toRightOf="@id/haveArideBackBtn"
+                    android:layout_marginRight="10dip"
+                    android:src="@drawable/sperator" />
+
+       <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/giveArideTitle"
+                android:textColor="#FFFFFF"
+                android:textAlignment="gravity" />
+
+        <ImageButton
+            android:id="@+id/addTripBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/add" 
+            android:paddingTop="5dip"
+            android:paddingBottom="5dip"
+            android:layout_marginRight="5dip"
+            android:layout_centerVertical="true"
+            android:background="@drawable/list_selector_holo_light"/>
+        <ImageButton
+            android:id="@+id/searchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_search"
+            android:paddingTop="5dip"
+            android:paddingBottom="5dip"
+            android:layout_marginRight="5dip"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/addTripBtn"
+            android:background="@drawable/list_selector_holo_light"/>
+        <!--<ImageView
+                    android:id="@+id/spaceImage2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:layout_toLeftOf="@id/searchBtn"
+                    android:layout_marginRight="5dip"
+                    android:src="@drawable/sperator" />  -->
+    </RelativeLayout>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/haveArideTab"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/haveArideHeader" 
+        android:layout_marginBottom="100dip">
+
+        <TabHost
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@android:id/tabhost"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_above="@+id/btn_area" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:orientation="horizontal" />
+
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="0" />
+                    
+
+                <FrameLayout
+                    android:id="@+android:id/realtabcontent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+                                        
+            </LinearLayout>
+        </TabHost>
+    </RelativeLayout>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/btn_area"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/actions_background"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal" 
+            android:layout_marginTop="15dip">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center" 
+                android:layout_weight="1"
+                
+                >
+
+                <ImageButton
+                    android:id="@+id/btnMyTrips"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/mytrips" 
+                    android:background="@drawable/list_selector_holo_light"
+                    >
+                </ImageButton>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/btnMyTrips"
+                    android:layout_centerHorizontal="true"
+                    android:clickable="false"
+                    android:text="@string/myTrips" 
+                    android:singleLine="true"
+                    android:textColor="@color/haveArideBtnAreaColor"
+                    />
+                
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center" 
+                android:layout_weight="1"
+                >
+
+                <FrameLayout
+                    android:id="@+id/imgFrame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true" >
+
+                    <ImageButton
+                        android:id="@+id/btnInbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="10dp"
+                        android:src="@drawable/inbox" 
+                        android:background="@drawable/list_selector_holo_light"
+                        />
+
+                    <TextView
+                        android:id="@+id/notification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top|right"
+                        android:background="@drawable/rounded_border"
+                        android:gravity="center"
+                        android:minWidth="15dp"
+                        android:paddingLeft="1dp"
+                        android:paddingRight="1dp"
+                        android:text="0"
+                        android:textColor="#FF0000"
+                        android:textStyle="bold" 
+                        android:visibility="gone"/>
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/imgFrame"
+                    android:layout_centerHorizontal="true"
+                    android:clickable="false"
+                    android:text="@string/myInbox" 
+                    android:singleLine="true"
+                    android:textColor="@color/haveArideBtnAreaColor"
+                    />
+                </RelativeLayout>
+
+           <!--   <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center" 
+                android:layout_weight="1"
+                >
+
+            
+                <ImageButton
+                    android:id="@+id/btnHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/home" 
+                    android:background="@drawable/list_selector_holo_light"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/btnHome"
+                    android:layout_centerHorizontal="true"
+                    android:clickable="false"
+                    android:text="@string/home" 
+                    android:singleLine="true"
+                    android:textColor="@color/haveArideBtnAreaColor"
+                    />
+              
+            </RelativeLayout>-->
+            
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center" 
+                android:layout_weight="1"
+                >
+
+                <ImageButton
+                    android:id="@+id/btnFeedback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/feedback"
+                    android:background="@drawable/list_selector_holo_light"
+                     >
+                </ImageButton>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/btnFeedback"
+                    android:layout_centerHorizontal="true"
+                    android:clickable="false"
+                    android:text="@string/feedback" 
+                    android:singleLine="true"
+                    android:textColor="@color/haveArideBtnAreaColor"
+                    />
+               
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center" 
+                android:layout_weight="1"
+                >
+
+                <ImageButton
+                    android:id="@+id/btnSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/setting" 
+                    android:background="@drawable/list_selector_holo_light"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/btnSetting"
+                    android:layout_centerHorizontal="true"
+                    android:clickable="false"
+                    android:text="@string/seeting" 
+                    android:singleLine="true"
+                    android:textAlignment="gravity"
+                    android:gravity="left"
+                    android:textColor="@color/haveArideBtnAreaColor"
+                    />
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+    android:padding="5dip" >
+
+	<!--  ListRow Left sied Thumbnail image -->
+	<LinearLayout android:id="@+id/senderImg" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="3dip"		
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/image_bg" 
+	    android:layout_marginRight="5dip">
+        
+		<ImageView     
+			android:id="@+id/senderImage"   
+	        android:layout_width="50dip"
+	        android:layout_height="50dip"/>
+        
+	</LinearLayout>
+    
+	<!-- Title -->
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/senderImg"
+        android:layout_toRightOf="@+id/senderImg"
+        android:textColor="#040404"
+        android:typeface="sans" 
+        android:textSize="15dip"
+        android:layout_marginTop="5dip"
+        android:textStyle="bold"/>
+
+	<!-- Details -->
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:textColor="#0000FF"
+        android:textSize="10dip"
+        android:layout_marginTop="10dip"
+        android:layout_toRightOf="@+id/senderImg"/>
+   
+
+	<!-- Rightend Duration -->
+    <LinearLayout android:id="@+id/messageTimeCnt" 
+		android:layout_width="75dip"
+		android:layout_height="55dip"
+        android:layout_toLeftOf="@+id/messagecheckCnt"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="0dip"
+        android:layout_marginBottom="0dip"
+	    android:layout_marginRight="5dip">
+        
+		<TextView
+        android:id="@+id/messageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        
+        android:gravity="center_horizontal"
+        android:textSize="10dip"
+        android:textColor="#000000"
+        android:layout_marginTop="5dip"
+        android:textStyle="bold"/>
+     
+     <TextView
+        android:id="@+id/messageDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="10dip"
+        android:textColor="#000000"
+        android:layout_marginTop="10dip"
+        android:textStyle="bold"/>
+        
+	</LinearLayout>
+	
+    <LinearLayout android:id="@+id/messagecheckCnt" 
+		android:layout_width="30dip"
+		android:layout_height="55dip"
+        android:layout_alignParentRight="true"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="0dip"
+        android:layout_marginBottom="0dip"
+	    android:layout_marginRight="5dip">
+        
+     <CheckBox
+        android:id="@+id/messagecheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="10dip"
+        android:textColor="#000000"
+        android:layout_marginTop="10dip"
+        android:textStyle="bold"
+        android:focusable="false"
+        />
+        
+	</LinearLayout>
+    
+     
+    
+</RelativeLayout>

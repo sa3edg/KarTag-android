@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal" >
+
+    <!-- ListRow Left sied Thumbnail image -->
+
+    <LinearLayout
+        android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dip"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:padding="3dip" >
+
+        <ImageView
+            android:id="@+id/userImage"
+            android:layout_width="50dip"
+            android:layout_height="50dip" />
+    </LinearLayout>
+
+    <!-- Title -->
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/thumbnail"
+        android:layout_marginLeft="5dip"
+        android:layout_marginTop="5dip"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:textColor="@color/nameTextColor"
+        android:textSize="@dimen/tripListNameSize"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+     <!-- Details -->
+     <TextView
+        android:id="@+id/startPool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:layout_marginTop="10dip"
+        android:drawableLeft="@drawable/location"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:textColor="#000000"
+        android:gravity="center_vertical"
+        android:drawablePadding="5dip"
+        android:textSize="@dimen/tripListTimeSize" />
+    
+    <TextView
+        android:id="@+id/timeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/startPool"
+        android:layout_marginTop="10dip"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:drawableLeft="@drawable/clock"
+        android:gravity="center_vertical"
+        android:textColor="#000000"
+        android:drawablePadding="5dip"
+        android:textSize="@dimen/tripListTimeSize" />
+
+    <!-- Rightend Duration -->
+
+    <!-- <LinearLayout
+        android:id="@+id/tripTimeCnt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/timeText"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" 
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/statusImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dip"
+            android:focusable="false"
+            />
+    </LinearLayout>
+     -->
+
+    <LinearLayout
+        android:id="@+id/tripcheckCnt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dip"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/tripcheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:gravity="center_horizontal"
+            android:textColor="#000000" />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/tripTimeCnt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/timeText"
+        android:orientation="horizontal" 
+        android:layout_marginRight="10dip"
+        >
+
+        <ImageView
+            android:id="@+id/statusImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            
+            />
+    </LinearLayout>
+
+</RelativeLayout>

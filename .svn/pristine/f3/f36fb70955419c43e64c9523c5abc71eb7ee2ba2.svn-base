@@ -1,0 +1,85 @@
+package com.kartag.gui.presentation;
+
+import com.kartag.controller.OrderCoordinator;
+import com.kartag.controller.RequestFactory;
+import com.kartag.gui.AbstractScreen;
+import com.kartag.gui.MainActivity;
+import com.kartag.gui.R;
+import com.kartag.gui.adapter.TripListImagesAdapter;
+import com.kartag.performance.ImagesMemoryHandler;
+import com.kartag.persistence.model.bo.Pool;
+import com.kartag.persistence.model.bo.Trip;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
+import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ImageButton;
+import android.widget.ListView;
+
+public class TripsList extends AbstractScreen {
+
+	private FragmentActivity activity;
+	private DisplayImageOptions options;
+	private Pool pool;
+	private ListView listView1;
+
+	public TripsList(FragmentActivity main, Pool pool ) {
+		super(main);
+		this.activity = main;
+		this.pool = pool;
+		options = ImagesMemoryHandler.getDisplayImageOptions();
+		 OrderCoordinator.handleOrder(this, RequestFactory.createGetTripsRequest(Trip.REQUEST));
+
+	}
+
+	@Override
+	public void loadScreen() 
+	{
+		try {
+			activity.setContentView(R.layout.trips_list_layout);
+			listView1 = (ListView) activity.findViewById(R.id.tripsListView);
+			TripListImagesAdapter<Trip> adapter = new TripListImagesAdapter<Trip>(options
+					, activity, R.layout.trips_list_row, pool.getTrips());
+
+			listView1.setAdapter(adapter);
+			listView1.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), false, true));
+			setOnClickAction();
+			ImageButton back = (ImageButton) activity.findViewById(
+					R.id.tripsBackBtn);
+			back.setOnClickListener(new OnClickListener() {
+
+				public void onClick(View arg0) {
+					activity.onBackPressed();
+				}
+
+			});
+		} catch (Exception ex) {
+			Log.e("error", Log.getStackTraceString(ex));
+		}
+	}
+
+	private void setOnClickAction() {
+		listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+					long arg3) {
+				
+				Trip trip = pool.getTrips().get(position);
+				Intent intent = new Intent(activity, MainActivity.class);
+				intent.putExtra(MainActivity.nextScreenParam, MainActivity.TRIP_DETAILS_ID);
+				intent.putExtra("trip", trip);
+				activity.startActivity(intent);
+			}
+
+		});
+		
+	}
+}

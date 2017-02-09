@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.kartag.gui"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center_vertical"
+    android:orientation="vertical" 
+    >
+
+    <LinearLayout
+        android:id="@+id/myTripBackBtnCnt"
+        android:layout_width="fill_parent"
+        android:layout_height="40dip"
+        android:orientation="horizontal" 
+        android:background="@drawable/top_bar">
+
+
+            <ImageButton
+                android:id="@+id/messageDetailsBackBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/list_selector_holo_light"
+                android:src="@drawable/back" />
+    </LinearLayout>
+    <!--  <TextView
+        android:id="@+id/inboxDetailsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/> -->
+
+    <ListView
+        android:id="@+id/messagesListView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:layout_below="@id/myTripBackBtnCnt"
+        />
+
+ <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dip"
+        android:orientation="horizontal"
+        android:gravity="bottom" 
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/buttom_bar"
+        >
+       
+         <EditText
+            android:id="@+id/replyTxt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:layout_gravity="left"
+            android:inputType="text"/>
+          <Button
+            android:id="@+id/replyBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" 
+            android:layout_gravity="right"
+            android:layout_weight="0.5"
+            android:text="@string/sendBtn"/>
+    </LinearLayout>
+</RelativeLayout>

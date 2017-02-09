@@ -1,0 +1,143 @@
+package com.kartag.gui.presentation;
+
+import java.util.Date;
+import java.util.List;
+
+import android.content.Intent;
+import android.sax.TextElementListener;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
+import com.kartag.client.common.Request;
+import com.kartag.client.common.Response;
+import com.kartag.client.processing.ResponseProcessingHelper;
+import com.kartag.controller.OrderCoordinator;
+import com.kartag.controller.RequestFactory;
+import com.kartag.gui.AbstractScreen;
+import com.kartag.gui.IActivity;
+import com.kartag.gui.MainActivity;
+import com.kartag.gui.R;
+import com.kartag.gui.adapter.MessageDetailsAdapter;
+import com.kartag.gui.adapter.MessagesListAdapter;
+import com.kartag.gui.adapter.TripFrequencyAdapter;
+import com.kartag.persistence.dao.PersistenceSessionFactory;
+import com.kartag.persistence.dao.bd.SettingDao;
+import com.kartag.persistence.model.bo.Message;
+import com.kartag.persistence.model.bo.Reply;
+import com.kartag.persistence.model.bo.Setting;
+import com.kartag.persistence.model.bo.User;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
+public class SettingScreen extends AbstractScreen{
+
+	private SettingDao settingDao;
+	
+	public SettingScreen(FragmentActivity activity) {
+		super(activity);
+		this.activity = activity;
+	}
+
+	@Override
+	public void loadScreen() {
+		activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		activity.setContentView(R.layout.setting_layout);
+		settingDao = new SettingDao(PersistenceSessionFactory.createSessionInstance(activity).currentSession());
+//		ToggleButton publish = (ToggleButton) activity.findViewById(R.id.publishToggle);
+//
+//		if(User.getInstance().getSetting().getPublish().equals(Setting.ON))
+//		{
+//			publish.setChecked(true);
+//		}
+//		else if(User.getInstance().getSetting().getPublish().equals(Setting.OFF))
+//		{
+//			publish.setChecked(false);
+//		}
+//		publish.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+//
+//		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//
+//		    	try
+//		    	{
+//		        if(isChecked)
+//		        {
+//		        	settingDao.updatePublishStatus(Setting.ON);
+//		        	if(User.getInstance().getSetting() != null)
+//		        	{
+//		        		User.getInstance().getSetting().setPublish(Setting.ON);
+//		        	}
+//		        }
+//		        else
+//		        {
+//		        	settingDao.updatePublishStatus(Setting.OFF);
+//		        	if(User.getInstance().getSetting() != null)
+//		        	{
+//		        		User.getInstance().getSetting().setPublish(Setting.OFF);
+//		        	}
+//		        }
+//		    	}
+//		    	catch(Exception ex)
+//		    	{
+//		    		Log.e("Error", ex.getMessage());
+//		    	}
+//		    }
+//		});
+		
+		ToggleButton logOut = (ToggleButton) activity.findViewById(R.id.logoutToggle);
+
+		if(User.getInstance().getSetting().getLogout().equals(Setting.ON))
+		{
+			logOut.setChecked(true);
+		}
+		else if(User.getInstance().getSetting().getLogout().equals(Setting.OFF))
+		{
+			logOut.setChecked(false);
+		}
+		logOut.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+		    	 if(isChecked)
+			        {
+			        	settingDao.updateLogoutStatus(Setting.ON);
+			        	if(User.getInstance().getSetting() != null)
+			        	{
+			        		User.getInstance().getSetting().setLogout(Setting.ON);
+			        	}
+			        }
+			        else
+			        {
+			        	settingDao.updateLogoutStatus(Setting.OFF);
+			        	if(User.getInstance().getSetting() != null)
+			        	{
+			        		User.getInstance().getSetting().setLogout(Setting.OFF);
+			        	}
+			        }
+		    }
+		});
+		ImageButton back = (ImageButton) activity.findViewById(R.id.settingbackBackBtn);
+		back.setOnClickListener(new OnClickListener() {
+        	 
+			public void onClick(View arg0) {
+				activity.onBackPressed();
+			}
+ 
+		});
+	}
+
+}

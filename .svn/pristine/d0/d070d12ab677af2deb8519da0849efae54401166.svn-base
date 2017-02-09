@@ -1,0 +1,60 @@
+package com.kartag.client.processing;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.kartag.client.common.Response;
+
+public class AsyncSimpleConnection extends AsyncTask<String, Void, Response>{
+	private HttpClient httpclient = new DefaultHttpClient();
+	private HttpPost httppost;
+//	private Request request ;
+//	private Response response;
+	private IProcessor processor;
+	
+	public AsyncSimpleConnection(IProcessor processor)
+	{
+		this.processor = processor;
+	}
+	@Override
+	protected Response doInBackground(String... params) {
+		// TODO Auto-generated method stub
+		Response res = new Response();
+		httppost = new HttpPost(params[0]);
+		try {
+			httppost.addHeader("User-Agent", processor.getRequest().getSource());
+//			httppost.addHeader("Content-Type",
+//                    "application/x-www-form-urlencoded;charset=UTF-8");
+			httppost.setEntity(new UrlEncodedFormEntity(processor.getRequest()
+					.getParameters(), HTTP.UTF_8));
+			HttpResponse response = httpclient.execute(httppost);
+			String responseBody = EntityUtils.toString(response.getEntity(), HTTP.UTF_8);
+			res.setResponse(responseBody);
+			Log.i("in background", (String)res.getResponse());
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			Log.e("error", Log.getStackTraceString(ex));
+		}
+		return res;
+	}
+	
+	@Override
+    protected void onPostExecute(Response res) {
+		Log.i("in post execute", (String) res.getResponse());
+		res.setRequestName(processor.getRequest().getRequestName());
+		if(!this.processor.getRequest().isAsync())
+		{
+		   this.processor.getActivity().postExecution(res);
+		}
+    }
+
+}

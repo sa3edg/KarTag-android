@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.kartag.gui"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center_vertical"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+            android:id="@+id/myTripBackBtnCnt"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:background="@drawable/top_bar"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:id="@+id/backCnt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:id="@+id/myTripBackBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/back" />
+
+                <ImageView
+                    android:id="@+id/spaceImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/sperator" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/myTripsTitle"
+                android:textColor="#FFFFFF"
+                android:textAlignment="gravity" />
+        </RelativeLayout>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/myTripListView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/myTripBackBtnCnt" 
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="65dip">
+
+        <ListView
+            android:id="@+id/myTripsListView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+             />
+    </RelativeLayout>
+            <!--  android:descendantFocusability="blocksDescendants" -->
+    
+    
+        <LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center" 
+    android:layout_alignParentBottom="true"
+    android:background="@drawable/buttom_bar">
+
+            <ImageButton
+                android:id="@+id/addTrip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/add" >
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/refreshTrip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/refresh" >
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/deleteTrip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/delete" >
+            </ImageButton>
+        </LinearLayout>
+</RelativeLayout>

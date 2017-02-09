@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal" >
+
+    <!-- ListRow Left sied Thumbnail image -->
+
+    <LinearLayout
+        android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dip"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:padding="3dip" >
+
+        <ImageView
+            android:id="@+id/userImage"
+            android:layout_width="50dip"
+            android:layout_height="50dip" />
+    </LinearLayout>
+
+    <!-- Title -->
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/thumbnail"
+        android:layout_marginLeft="5dip"
+        android:layout_marginTop="5dip"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:textColor="@color/nameTextColor"
+        android:textSize="15dip"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+     <!-- Details -->
+
+    <ImageView
+        android:id="@+id/poolImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:layout_marginLeft="5dip"
+        android:layout_marginTop="10dip"
+        android:layout_marginBottom="5dip"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:src="@drawable/location"
+        />
+    
+    <TextView
+        android:id="@+id/startPool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:layout_marginLeft="5dip"
+        android:layout_marginTop="10dip"
+        android:layout_toRightOf="@+id/poolImage"
+        android:textColor="#000000"
+        android:textSize="10dip" />
+    <ImageView
+        android:id="@+id/timeImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/poolImage"
+        android:layout_marginLeft="5dip"
+        android:layout_marginBottom="10dip"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:src="@drawable/clock"
+        />
+    
+    <TextView
+        android:id="@+id/timeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/startPool"
+        android:layout_marginLeft="5dip"
+        android:layout_marginTop="10dip"
+        android:layout_toRightOf="@+id/timeImage"
+        android:textColor="#000000"
+        android:textSize="10dip" />
+
+    <!-- Rightend Duration -->
+
+    <LinearLayout
+        android:id="@+id/tripTimeCnt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dip"
+        android:layout_marginTop="0dip"
+        android:layout_below="@+id/timeText"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" 
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/statusImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dip"
+            
+            android:layout_gravity="center_horizontal"
+            android:focusable="false"
+            android:layout_below="@+id/timeText"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tripcheckCnt"
+        android:layout_width="30dip"
+        android:layout_height="55dip"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="0dip"
+        android:layout_marginRight="13dip"
+        android:layout_marginTop="0dip"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/tripcheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:focusable="false"
+            android:gravity="center_horizontal"
+            android:textColor="#000000" />
+    </LinearLayout>
+
+</RelativeLayout>

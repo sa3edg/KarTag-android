@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.kartag.gui"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center_vertical"
+    android:orientation="vertical" >
+
+     <RelativeLayout
+            android:id="@+id/myTripBackBtnCnt"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:background="@drawable/top_bar"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:id="@+id/backCnt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:id="@+id/tripsBackBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/back" />
+
+                <ImageView
+                    android:id="@+id/spaceImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/sperator" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/tripsTitle"
+                android:textColor="#FFFFFF"
+                android:textAlignment="gravity" />
+        </RelativeLayout>
+   
+
+    <ListView
+        android:id="@+id/tripsListView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:layout_below="@id/myTripBackBtnCnt"
+        android:layout_marginTop="10dip"
+        />
+</RelativeLayout>

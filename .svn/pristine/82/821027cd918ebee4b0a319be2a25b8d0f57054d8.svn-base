@@ -1,0 +1,246 @@
+package com.kartag.gui.presentation;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import android.content.Intent;
+import android.os.Handler;
+import android.sax.TextElementListener;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.facebook.model.GraphFriend;
+import com.kartag.client.common.Request;
+import com.kartag.client.common.Response;
+import com.kartag.client.processing.ResponseProcessingHelper;
+import com.kartag.controller.OrderCoordinator;
+import com.kartag.controller.RequestFactory;
+import com.kartag.gui.AbstractScreen;
+import com.kartag.gui.IActivity;
+import com.kartag.gui.MainActivity;
+import com.kartag.gui.R;
+import com.kartag.gui.adapter.MessageDetailsAdapter;
+import com.kartag.gui.adapter.MessagesListAdapter;
+import com.kartag.gui.adapter.TripFrequencyAdapter;
+import com.kartag.persistence.model.bo.Message;
+import com.kartag.persistence.model.bo.Reply;
+import com.kartag.persistence.model.bo.User;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
+public class MessageDetails extends AbstractScreen implements IActivity {
+
+	private ListView listView1;
+	private Message message;
+	private DisplayImageOptions options;
+	private FragmentActivity activity;
+	private EditText text;
+	private MessageDetailsAdapter adapter;
+	private GraphFriend tripOwner;
+	public static Handler updateHandler = new Handler();
+	public static Runnable mUpdateTimeTask;
+	private static long executionInterval = 1000 * 60;
+	private MessageDetails instance;
+	public MessageDetails(FragmentActivity activity, Message message) {
+		super(activity);
+		this.activity = activity;
+		this.message = message;
+		instance = this;
+		options = new DisplayImageOptions.Builder()
+				.showStubImage(R.drawable.ic_stub)
+				.showImageForEmptyUri(R.drawable.ic_empty)
+				.showImageOnFail(R.drawable.ic_error).cacheInMemory()
+				.cacheOnDisc().displayer(new RoundedBitmapDisplayer(5)).build();
+		
+		OrderCoordinator.handleOrder(
+				this,
+				RequestFactory.createGetMessageReplies(message.getId()));
+	}
+
+	public MessageDetails(FragmentActivity activity, GraphFriend tripOwner) {
+		super(activity);
+		this.activity = activity;
+		this.tripOwner = tripOwner;
+		instance = this;
+	}
+
+	@Override
+	public void loadScreen() {
+		updateHandler.removeCallbacks(mUpdateTimeTask);
+		activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		activity.setContentView(R.layout.message_details_layout);
+		if (message != null) {
+			listView1 = (ListView) activity.findViewById(R.id.messagesListView);
+			adapter = new MessageDetailsAdapter(options, activity,
+					R.layout.message_details_list_row, message);
+			listView1.setAdapter(adapter);
+			listView1.setOnScrollListener(
+					   new PauseOnScrollListener(ImageLoader.getInstance(),
+							false, true));
+		}
+		text = (EditText) activity.findViewById(R.id.replyTxt);
+
+		Button send = (Button) activity.findViewById(R.id.replyBtn);
+
+		send.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+
+				if (text.getText().toString() == null
+						|| "".equals(text.getText().toString())) {
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.emptyMessage), Toast.LENGTH_SHORT)
+							.show();
+				} else {
+					if (message == null) {
+						sendMessage(text.getText().toString());
+					} else {
+						reply(text.getText().toString());
+					}
+				}
+			}
+
+		});
+		ImageButton back = (ImageButton) activity
+				.findViewById(R.id.messageDetailsBackBtn);
+		back.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				updateHandler.removeCallbacks(mUpdateTimeTask);
+				activity.onBackPressed();
+			}
+
+		});
+		if(message != null)
+		{
+			startRepliesHandler();
+		}
+	}
+
+	public void startRepliesHandler() {
+
+		mUpdateTimeTask = new Runnable() {
+			public void run() {
+				try {
+					OrderCoordinator.handleOrder(
+							instance,
+							RequestFactory.createGetMessageReplies(message.getId()));
+					updateHandler.postDelayed(mUpdateTimeTask, executionInterval);
+
+				} catch (Exception ex) {
+
+				}
+
+			}
+		};
+		new Thread(mUpdateTimeTask).start();
+		
+}
+
+	@Override
+	public void preExecution() {
+		
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void postExecution(Response response) {
+		closeProgress();
+		try {
+			if (response.getRequestName().equals(Request.GET_MESSAGE_REPLIES_REQUEST)) {
+				List<Reply> replies = (ArrayList<Reply>) ResponseProcessingHelper.getInstance()
+						.handleResponse(Request.GET_MESSAGE_REPLIES_REQUEST,
+								(String) response.getResponse());
+				if(replies != null && replies.size() > 0)
+				{
+				   message.setReplies(replies);
+//				   adapter = new MessageDetailsAdapter(options, activity,
+//						   R.layout.message_details_list_row, message);
+//				   listView1.setAdapter(adapter);
+				   adapter.notifyDataSetChanged();
+				 
+				}
+				}
+			else if (response.getRequestName().equals(Request.ADD_REPLY_REQUEST)) {
+			boolean success = (Boolean) ResponseProcessingHelper.getInstance()
+					.handleResponse(Request.ADD_REPLY_REQUEST,
+							(String) response.getResponse());
+			if (success) {
+				Reply reply = new Reply();
+				reply.setMessageId(message.getId());
+				reply.setFromUid(User.getInstance().getProfile().getId());
+				reply.setFromName(User.getInstance().getProfile().getName());
+				reply.setToUid(message.getFromUid());
+				reply.setToName(message.getFromName());
+				reply.setTime(String.valueOf(new Date().getTime()));
+				reply.setText(text.getText().toString());
+				text.setText("");
+				message.getReplies().add(reply);
+				adapter.notifyDataSetChanged();
+			} else {
+				Toast.makeText(
+						activity.getApplicationContext(),
+						activity.getResources().getString(
+								R.string.connectionError), Toast.LENGTH_SHORT)
+						.show();
+			}
+			}
+			else if (response.getRequestName().equals(Request.ADD_MESSAGE_REQUEST)) {
+				boolean success = (Boolean) ResponseProcessingHelper.getInstance()
+						.handleResponse(Request.ADD_MESSAGE_REQUEST,
+								(String) response.getResponse());
+				if (success) {
+					
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.youmessageSentSuccessfully), Toast.LENGTH_SHORT)
+							.show();
+				}
+				else {
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.connectionError), Toast.LENGTH_SHORT)
+							.show();
+				}
+				
+			}
+		} catch (Exception ex) {
+			Log.e("error", Log.getStackTraceString(ex));
+		}
+	}
+
+	private void reply(String text) {
+		showProgressBar();
+		OrderCoordinator.handleOrder(
+				this,
+				RequestFactory.createAddReplyRequest(message.getId(), User
+						.getInstance().getProfile().getId(),
+						message.getFromUid(), User.getInstance().getProfile()
+								.getName(), message.getFromName(), text));
+	}
+
+	private void sendMessage(String text) {
+		showProgressBar();
+		OrderCoordinator.handleOrder(this,
+				RequestFactory.createAddMessageRequest(User.getInstance().getProfile().getId(), tripOwner.getUid(),
+						User.getInstance().getProfile().getName(), tripOwner.getName(), text));
+	}
+
+}

@@ -1,0 +1,318 @@
+package com.kartag.gui.adapter;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.kartag.client.common.Request;
+import com.kartag.client.common.Response;
+import com.kartag.client.processing.ResponseProcessingHelper;
+import com.kartag.controller.OrderCoordinator;
+import com.kartag.controller.RequestFactory;
+import com.kartag.gui.IActivity;
+import com.kartag.gui.R;
+import com.kartag.util.DateUtils;
+import com.kartag.util.UserUtils;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
+import android.app.Activity;
+import android.app.Dialog;
+
+public class NotificationListAdapter<Notification> extends
+		ArrayAdapter<Notification> implements IActivity {
+
+	int resource;
+	String response;
+	Context context;
+	List<Notification> items;
+	DisplayImageOptions options;
+	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+	private CustomProgressDialog progress;
+	private int index;
+
+	@Override
+	public int getCount() {
+		return items.size();
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
+	// Initialize adapter
+	public NotificationListAdapter(DisplayImageOptions op, Context context,
+			int resource, List<Notification> items) {
+		super(context, resource, items);
+		this.resource = resource;
+		this.context = context;
+		this.items = items;
+		this.options = op;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		// Get the current alert object
+		final com.kartag.persistence.model.bo.Notification model = (com.kartag.persistence.model.bo.Notification) getItem(position);
+		final int selectedIndex = position;
+		// allNotifications.add(model);
+		View row = convertView;
+		ViewHolder holder = null;
+
+		if (row == null) {
+			LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+			row = inflater.inflate(resource, parent, false);
+
+			holder = new ViewHolder();
+			holder.owner = (TextView) row.findViewById(R.id.tripOwnerName);
+			holder.tripInfo = (TextView) row.findViewById(R.id.tripInfo);
+			holder.icon = (ImageView) row.findViewById(R.id.tripOwnerImage);
+			holder.accept = (ImageButton) row.findViewById(R.id.acceptTrip);
+			holder.reject = (ImageButton) row.findViewById(R.id.rejectTrip);
+			holder.tripTime = (TextView) row.findViewById(R.id.tripTime);
+			
+			row.setTag(holder);
+		} else {
+			holder = (ViewHolder) row.getTag();
+		}
+		if (com.kartag.persistence.model.bo.Notification.JOIN_REQUEST_TYPE
+				.equals(model.getType())) {
+			String[] time = DateUtils.getTripTimeFromMilliseconds(model
+					.getNotificationTime());
+			holder.owner.setText(model.getFromName());
+			holder.tripInfo.setText(model.getFromPoolName() + " To "
+					+ model.getToPoolName());
+			holder.tripTime.setText(time[0] + " " + time[1]);
+			ImageLoader.getInstance().displayImage(
+					UserUtils.getProfilePictureURL(model.getFromUid()),
+					holder.icon, options, animateFirstListener);
+
+			holder.accept.setVisibility(View.VISIBLE);
+			holder.reject.setVisibility(View.VISIBLE);
+			holder.accept.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					setIndex(selectedIndex);
+					acceptTrip(model.getTripId());
+				}
+			});
+			holder.reject.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					setIndex(selectedIndex);
+					rejectTrip(model.getTripId());
+				}
+			});
+		} else if (com.kartag.persistence.model.bo.Notification.REPLY_REQUEST_TYPE
+				.equals(model.getType())) {
+			String[] time = DateUtils.getTripTimeFromMilliseconds(model
+					.getNotificationTime());
+			holder.owner.setText(model.getFromName());
+			holder.tripInfo.setText(model.getFromPoolName() + " To "
+					+ model.getToPoolName());
+			holder.tripTime.setText(time[0] + " " + time[1]);
+			ImageLoader.getInstance().displayImage(
+					UserUtils.getProfilePictureURL(model.getFromUid()),
+					holder.icon, options, animateFirstListener);
+			holder.reject.setVisibility(View.VISIBLE);
+			if(com.kartag.persistence.model.bo.Notification.ACCEPT_REQUEST.equals(model.getStatus()))
+			{
+				holder.reject.setImageDrawable(context.getResources().getDrawable(R.drawable.accepted));
+			}
+			else if(com.kartag.persistence.model.bo.Notification.REJECT_REQUEST.equals(model.getStatus()))
+			{
+				
+			}
+			else if(com.kartag.persistence.model.bo.Notification.JOIN_REQUEST.equals(model.getStatus()))
+			{
+				
+			}
+			else if(com.kartag.persistence.model.bo.Notification.CANCELED_STATUS.equals(model.getStatus()))
+			{
+			
+			}
+			holder.reject.setImageDrawable(context.getResources().getDrawable(R.drawable.accepted));
+		}
+		return row;
+	}
+	
+
+	private void acceptTrip(String tripId) {
+		OrderCoordinator.handleOrder(this,
+				RequestFactory.createAcceptTripRequest(tripId));
+	}
+
+	private void rejectTrip(String tripId) {
+		OrderCoordinator.handleOrder(this,
+				RequestFactory.createRejectTripRequest(tripId));
+	}
+
+	public void showProgressBar() {
+
+		progress = new CustomProgressDialog((FragmentActivity) context);
+		progress.show();
+	}
+
+	public void closeProgress() {
+		progress.dismiss();
+	}
+
+	private static class AnimateFirstDisplayListener extends
+			SimpleImageLoadingListener {
+
+		static final List<String> displayedImages = Collections
+				.synchronizedList(new LinkedList<String>());
+
+		@Override
+		public void onLoadingComplete(String imageUri, View view,
+				Bitmap loadedImage) {
+			if (loadedImage != null) {
+				ImageView imageView = (ImageView) view;
+				boolean firstDisplay = !displayedImages.contains(imageUri);
+				if (firstDisplay) {
+					FadeInBitmapDisplayer.animate(imageView, 500);
+					displayedImages.add(imageUri);
+				} else {
+					imageView.setImageBitmap(loadedImage);
+				}
+			}
+		}
+	}
+
+	static class ViewHolder {
+		TextView owner;
+		TextView tripInfo;
+		TextView tripTime;
+		ImageView icon;
+		ImageButton accept;
+		ImageButton reject;
+		int position;
+	}
+
+	private class CustomProgressDialog extends Dialog {
+
+		private Context context;
+
+		public CustomProgressDialog(Context context) {
+			super(context);
+			this.context = context;
+			loadScreen();
+		}
+
+		/**
+		 * Initializes wheel
+		 * 
+		 * @param id
+		 *            the wheel widget Id
+		 */
+		public void loadScreen() {
+			// TODO Auto-generated method stub
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+			setContentView(R.layout.progress);
+			setCancelable(false);
+			getWindow().getDecorView().setBackgroundResource(
+					android.R.color.transparent);
+
+		}
+
+	}
+
+	@Override
+	public void preExecution() {
+		// TODO Auto-generated method stub
+		showProgressBar();
+	}
+
+	@Override
+	public void postExecution(Response response) {
+		// TODO Auto-generated method stub
+		closeProgress();
+		try {
+			if (response.getRequestName().equals(Request.ACCEPT_TRIP_REQUEST)) {
+				String success = (String) ResponseProcessingHelper
+						.getInstance().handleResponse(
+								Request.ACCEPT_TRIP_REQUEST,
+								(String) response.getResponse());
+				if (com.kartag.persistence.model.bo.Notification.ACCEPT_REQUEST.equals(success)) {
+					// com.kartag.persistence.model.bo.Notification model =
+					// allNotifications.get(getIndex());
+					// clickedNotifications.add(model);
+					items.remove(getIndex());
+					notifyDataSetChanged();
+					Toast.makeText(
+							context.getApplicationContext(),
+							context.getResources().getString(
+									R.string.yourAcceptDone),
+							Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(
+							context.getApplicationContext(),
+							context.getResources().getString(
+									R.string.connectionError),
+							Toast.LENGTH_SHORT).show();
+				}
+			} else if (response.getRequestName().equals(
+					Request.REJECT_TRIP_REQUEST)) {
+				String success = (String) ResponseProcessingHelper
+						.getInstance().handleResponse(
+								Request.REJECT_TRIP_REQUEST,
+								(String) response.getResponse());
+				if (com.kartag.persistence.model.bo.Notification.REJECT_REQUEST.equals(success)) {
+					// com.kartag.persistence.model.bo.Notification model =
+					// allNotifications.get(getIndex());
+					// clickedNotifications.add(model);
+					items.remove(getIndex());
+					notifyDataSetChanged();
+					Toast.makeText(
+							context.getApplicationContext(),
+							context.getResources().getString(
+									R.string.yourRejectDone),
+							Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(
+							context.getApplicationContext(),
+							context.getResources().getString(
+									R.string.connectionError),
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+		} catch (Exception ex) {
+			Toast.makeText(context.getApplicationContext(),
+					context.getResources().getString(R.string.connectionError),
+					Toast.LENGTH_SHORT).show();
+			Log.e("error", Log.getStackTraceString(ex));
+		}
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+}

@@ -1,0 +1,510 @@
+package com.kartag.gui.presentation;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
+import android.content.DialogInterface;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TimePicker;
+import android.widget.Toast;
+
+import com.kartag.client.common.Request;
+import com.kartag.client.common.Response;
+import com.kartag.client.processing.ResponseProcessingHelper;
+import com.kartag.controller.OrderCoordinator;
+import com.kartag.controller.RequestFactory;
+import com.kartag.gui.AbstractScreen;
+import com.kartag.gui.R;
+import com.kartag.persistence.model.bo.Pool;
+import com.kartag.persistence.model.bo.Setting;
+import com.kartag.persistence.model.bo.Trip;
+import com.kartag.persistence.model.bo.User;
+import com.kartag.util.TripUtils;
+
+public class AddTripScreen extends AbstractScreen {
+
+	private int hour = -1;
+	private int minute = -1;
+	private String frequency = "";
+	private String tripType = "";
+	private ArrayList<Pool> pools;
+	protected CharSequence[] days = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri",
+			"Sat" };
+	protected ArrayList<CharSequence> selectedDayes = new ArrayList<CharSequence>();
+	private int startPoolIndex = -1;
+	private int endPoolIndex = -1;
+	private int seatsIndex = 0;
+	private String timeStr = "";
+	private String dateStr = "";
+	private StringBuilder selectedDaysStr;
+	private String[] poolsArray;
+	private String[] seatsArray = { "1 Seat", "2 Seats", "3 Seats", "4 Seats" };
+	private boolean freidsOnly = false;
+	private boolean womenOnly = false;
+	private boolean smokkingAllowed = false;
+	private Button pickDate;
+	private Button selectDays;
+	private Trip addedTrip;
+	private EditText comment;
+	
+
+	public AddTripScreen(FragmentActivity activity, String tripType,
+			String frequency) {
+		super(activity);
+		this.tripType = tripType;
+		this.frequency = frequency;
+	}
+
+	@Override
+	public void loadScreen() {
+		activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		activity.setContentView(R.layout.add_trip_new_layout);
+		if (tripType.equals(Trip.REQUEST)) {
+			pools = new ArrayList<Pool>(User.getInstance().getRequestsPools()
+					.values());
+		} else {
+			pools = new ArrayList<Pool>(User.getInstance().getOffersPools()
+					.values());
+		}
+		String[] tempPools = new String[pools.size()];
+		int i = 0;
+		for (Pool pool : pools) {
+			tempPools[i] = pool.getPoolName().trim();
+			i++;
+		}
+		poolsArray = tempPools;
+		Button selectDaysBtn = (Button) activity.findViewById(R.id.daysBtn);
+		if ("weekly".equals(frequency)) {
+			selectDaysBtn.setVisibility(View.VISIBLE);
+		}
+		final Button selectStartPool = (Button) activity
+				.findViewById(R.id.fromBtn);
+		selectStartPool.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				final PoolsDialog pools = new PoolsDialog(activity, poolsArray);
+				pools.show();
+
+				Button dialogButton = (Button) pools
+						.findViewById(R.id.poolsWheelDismissBtn);
+				// if button is clicked, close the custom dialog
+				dialogButton.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+
+						startPoolIndex = pools.getSelectedPool();
+						selectStartPool.setText(poolsArray[startPoolIndex]);
+						pools.dismiss();
+					}
+				});
+			}
+
+		});
+
+		final Button selectEndPool = (Button) activity.findViewById(R.id.toBtn);
+		selectEndPool.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				final PoolsDialog pools = new PoolsDialog(activity, poolsArray);
+				pools.show();
+				Button dialogButton = (Button) pools
+						.findViewById(R.id.poolsWheelDismissBtn);
+				// if button is clicked, close the custom dialog
+				dialogButton.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						endPoolIndex = pools.getSelectedPool();
+						selectEndPool.setText(poolsArray[endPoolIndex]);
+						pools.dismiss();
+					}
+				});
+			}
+
+		});
+
+		pickDate = (Button) activity.findViewById(R.id.dateBtn);
+		pickDate.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				// Intent intent = new Intent(activity, MainActivity.class);
+				// intent.putExtra(MainActivity.nextScreenParam,
+				// MainActivity.PICK_DATE_SCREEN_ID);
+				// activity.startActivity(intent);
+				// DateTimePickerDialog pools = new
+				// DateTimePickerDialog(activity);
+				if ("weekly".equals(frequency)) {
+					Dialog time = createTimePickerDialog();
+					time.show();
+				} else {
+					final DateTimePickerDialog date = new DateTimePickerDialog(
+							activity);
+					date.show();
+					Button dialogButton = (Button) date
+							.findViewById(R.id.okDimissBtn);
+					// if button is clicked, close the custom dialog
+					dialogButton.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							dateStr = date.getDate();
+							timeStr = date.getTime();
+							pickDate.setText(dateStr + "  " + timeStr);
+							date.dismiss();
+						}
+					});
+
+				}
+			}
+
+		});
+		selectDays = (Button) activity.findViewById(R.id.daysBtn);
+		selectDays.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				selectedDaysStr = new StringBuilder();
+				showSelectDaysDialog();
+			}
+
+		});
+
+		final Button availableSeatsBtn = (Button) activity
+				.findViewById(R.id.seatsBtn);
+		availableSeatsBtn.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				final SeatsDialog seats = new SeatsDialog(activity, seatsArray);
+				seats.show();
+				Button dialogButton = (Button) seats
+						.findViewById(R.id.seatsWheelDismissBtn);
+				// if button is clicked, close the custom dialog
+				dialogButton.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						seatsIndex = seats.getSelectedSeat();
+						availableSeatsBtn.setText(seatsArray[seatsIndex]);
+						seats.dismiss();
+					}
+				});
+			}
+
+		});
+		final ImageButton addTrip = (ImageButton) activity
+				.findViewById(R.id.addTripAction);
+		addTrip.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				if (startPoolIndex == -1 || endPoolIndex == -1) {
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.missingTripDate),
+							Toast.LENGTH_LONG).show();
+				} else if ((dateStr.equals("") || timeStr.equals(""))
+						&& "once".equals(frequency)) {
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.missingTripDate),
+							Toast.LENGTH_LONG).show();
+				} else if ((hour == -1 || minute == -1)
+						&& !"once".equals(frequency)) {
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.missingTripDate),
+							Toast.LENGTH_LONG).show();
+				} else if (startPoolIndex == endPoolIndex) {
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.startPoolEqualEndPool),
+							Toast.LENGTH_LONG).show();
+				} else {
+					addTrip();
+				}
+			}
+
+		});
+
+		final ImageButton friendsOnlyBtn = (ImageButton) activity
+				.findViewById(R.id.friendsOnlyBtn);
+		friendsOnlyBtn.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				freidsOnly = !freidsOnly;
+				if (freidsOnly) {
+					friendsOnlyBtn
+							.setBackgroundResource(R.drawable.bar_on_press);
+					// friendsOnlyBtn.setCompoundDrawablesWithIntrinsicBounds(null,
+					// activity.getResources().getDrawable(R.drawable.frinds_active_btn),
+					// null, null);
+
+					friendsOnlyBtn
+							.setImageResource(R.drawable.frinds_active_btn);
+				} else {
+					friendsOnlyBtn
+							.setBackgroundResource(R.drawable.bar_not_press);
+					// friendsOnlyBtn.setCompoundDrawablesWithIntrinsicBounds(null,
+					// activity.getResources().getDrawable(R.drawable.frinds_inactive_btn),
+					// null, null);
+
+					friendsOnlyBtn
+							.setImageResource(R.drawable.frinds_inactive_btn);
+
+				}
+			}
+
+		});
+
+		final ImageButton womenOnlyBtn = (ImageButton) activity
+				.findViewById(R.id.womenOnlyBtn);
+		womenOnlyBtn.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				womenOnly = !womenOnly;
+				if (womenOnly) {
+					womenOnlyBtn.setBackgroundResource(R.drawable.bar_on_press);
+					// womenOnlyBtn.setCompoundDrawablesWithIntrinsicBounds(null,
+					// activity.getResources().getDrawable(R.drawable.woman_active_btn),
+					// null, null);
+					womenOnlyBtn.setImageResource(R.drawable.woman_active_btn);
+				} else {
+					womenOnlyBtn
+							.setBackgroundResource(R.drawable.bar_not_press);
+					// womenOnlyBtn.setCompoundDrawablesWithIntrinsicBounds(null,
+					// activity.getResources().getDrawable(R.drawable.woman_inactive_btn),
+					// null, null);
+
+					womenOnlyBtn
+							.setImageResource(R.drawable.woman_inactive_btn);
+
+				}
+			}
+
+		});
+
+		final ImageButton smokkingAllowedBtn = (ImageButton) activity
+				.findViewById(R.id.smokingAllowedBtn);
+		smokkingAllowedBtn.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				smokkingAllowed = !smokkingAllowed;
+				if (smokkingAllowed) {
+					smokkingAllowedBtn
+							.setBackgroundResource(R.drawable.bar_on_press);
+					// smokkingAllowedBtn.setCompoundDrawablesWithIntrinsicBounds(null,
+					// activity.getResources().getDrawable(R.drawable.smoking_active_btn),
+					// null, null);
+					smokkingAllowedBtn
+							.setImageResource(R.drawable.smoking_active_btn);
+				} else {
+					smokkingAllowedBtn
+							.setBackgroundResource(R.drawable.bar_not_press);
+					// smokkingAllowedBtn.setCompoundDrawablesWithIntrinsicBounds(null,
+					// activity.getResources().getDrawable(R.drawable.smoking_inactive_btn),
+					// null, null);
+
+					smokkingAllowedBtn
+							.setImageResource(R.drawable.smoking_inactive_btn);
+
+				}
+			}
+
+		});
+
+		comment = (EditText) activity.findViewById(R.id.commentTxt);
+		ImageButton back = (ImageButton) activity
+				.findViewById(R.id.addTripBackBtn);
+		back.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				activity.onBackPressed();
+			}
+
+		});
+		
+
+	}
+
+	protected void showSelectDaysDialog() {
+		boolean[] checkedColours = new boolean[days.length];
+		int count = days.length;
+
+		for (int i = 0; i < count; i++)
+			checkedColours[i] = selectedDayes.contains(days[i]);
+
+		DialogInterface.OnMultiChoiceClickListener coloursDialogListener = new DialogInterface.OnMultiChoiceClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which,
+					boolean isChecked) {
+				if (isChecked)
+					selectedDayes.add(days[which]);
+				else
+					selectedDayes.remove(days[which]);
+
+				onChangeSelectedDays();
+			}
+		};
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity)
+				.setPositiveButton("Ok", null);
+		builder.setTitle("Select Days");
+		builder.setMultiChoiceItems(days, checkedColours, coloursDialogListener);
+		AlertDialog dialog = builder.create();
+		dialog.show();
+	}
+
+	protected void onChangeSelectedDays() {
+
+		selectedDaysStr = new StringBuilder();
+		for (CharSequence day : selectedDayes)
+			selectedDaysStr.append(day + ",");
+		selectDays.setText(selectedDaysStr);
+
+	}
+
+	protected Dialog createTimePickerDialog() {
+
+		// set time picker as current time
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		hour = cal.get(Calendar.HOUR_OF_DAY);
+		minute = cal.get(Calendar.MINUTE);
+		return new TimePickerDialog(activity, timePickerListener, hour, minute,
+				true);
+	}
+
+	private String padByZero(int value) {
+		if (value < 10) {
+			return "0" + String.valueOf(value);
+		} else {
+			return String.valueOf(value);
+		}
+	}
+
+	private TimePickerDialog.OnTimeSetListener timePickerListener = new TimePickerDialog.OnTimeSetListener() {
+		@Override
+		public void onTimeSet(TimePicker view, int selectedHour,
+				int selectedMinute) {
+			hour = selectedHour;
+			minute = selectedMinute;
+
+			pickDate.setText(padByZero(hour) + ":" + padByZero(minute));
+
+		}
+	};
+
+	private void addTrip() {
+		// toggle trip type
+
+		if (tripType.equals(Trip.REQUEST)) {
+			tripType = Trip.OFFER;
+		} else {
+			tripType = Trip.REQUEST;
+		}
+		Trip trip = new Trip();
+		String time = "";
+		String date = "";
+		if ("once".equals(frequency)) {
+			date = dateStr;
+			time = timeStr + ":00";
+		} else {
+			date = selectedDaysStr.toString();
+			time = hour + ":" + minute + ":00";
+		}
+		trip.setUid(User.getInstance().getProfile().getId());
+		Pool startPool = (Pool) pools.get(startPoolIndex);
+		Pool endPool = (Pool) pools.get(endPoolIndex);
+		trip.setFromId(Integer.parseInt(startPool.getId()));
+		trip.setToId(Integer.parseInt(endPool.getId()));
+		trip.setAvailableSeats(seatsIndex + 1);
+		trip.setType(tripType);
+		trip.setFriendsOnly(freidsOnly);
+		trip.setWomenOnly(womenOnly);
+		trip.setSmokingAllowed(smokkingAllowed);
+		trip.setComment(comment.getText().toString());
+
+		addedTrip = trip;
+		addedTrip.setStartPool(startPool);
+		addedTrip.setEndPool(endPool);
+		addedTrip.setTime(date + " " + time);
+		showProgressBar();
+		OrderCoordinator.handleOrder(this, RequestFactory.createAddTripRequest(
+				frequency, time, date, trip));
+
+	}
+
+	@Override
+	public void postExecution(Response response) {
+
+		try {
+			if (response.getRequestName().equals(Request.ADD_TRIP_REQUEST)) {
+				boolean success = (Boolean) ResponseProcessingHelper
+						.getInstance().handleResponse(Request.ADD_TRIP_REQUEST,
+								(String) response.getResponse());
+				if (success) {
+
+					
+
+					closeProgress();
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.youTripAddedSuccessfully),
+							Toast.LENGTH_LONG).show();
+					if (User.getInstance().getSetting().getPublish()
+							.equals(Setting.ON)) {
+						
+						if ("once".equals(frequency)) {
+
+							OrderCoordinator
+									.handleOrder(
+											this,
+											RequestFactory
+													.createPublishToWallRequest(
+															activity,
+															TripUtils
+																	.getPublishedTripToWall(addedTrip)));
+						}
+					}
+				} else {
+					closeProgress();
+					Toast.makeText(
+							activity.getApplicationContext(),
+							activity.getResources().getString(
+									R.string.connectionError),
+							Toast.LENGTH_SHORT).show();
+				}
+			} else {
+				closeProgress();
+				Toast.makeText(
+						activity.getApplicationContext(),
+						activity.getResources().getString(
+								R.string.youTripAddedSuccessfully),
+						Toast.LENGTH_LONG).show();
+			}
+		} catch (Exception ex) {
+			closeProgress();
+			Toast.makeText(
+					activity.getApplicationContext(),
+					activity.getResources().getString(R.string.connectionError),
+					Toast.LENGTH_SHORT).show();
+		}
+
+	}
+
+	@Override
+	public void preExecution() {
+		//showProgressBar();
+	}
+
+}

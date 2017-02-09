@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+<RelativeLayout
+    android:id="@+id/generalFrame"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+            android:id="@+id/myTripBackBtnCnt"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:background="@drawable/top_bar"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:id="@+id/backCnt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:id="@+id/addTripBackBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/back" />
+
+                <ImageView
+                    android:id="@+id/spaceImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/list_selector_holo_light"
+                    android:src="@drawable/sperator" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/tripdetailsTitle"
+                android:textColor="#FFFFFF"
+                android:textAlignment="gravity" />
+        </RelativeLayout>
+
+    <!-- ListRow Left sied Thumbnail image -->
+
+    <LinearLayout
+        android:id="@+id/userThumbnailCnt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/myTripBackBtnCnt"
+        android:layout_marginRight="5dip"
+        android:padding="3dip" >
+
+        <ImageView
+            android:id="@+id/profile_pic"
+            android:layout_width="100dip"
+            android:layout_height="100dip" 
+            android:background="@drawable/list_selector_holo_light"/>
+    </LinearLayout>
+
+    <!-- Title -->
+
+    <TextView
+        android:id="@+id/userName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/userThumbnailCnt"
+        android:layout_toRightOf="@+id/userThumbnailCnt"
+        android:textColor="#040404"
+        android:layout_marginTop="10dp"
+        android:textSize="15dip"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <!-- Details -->
+    <RatingBar
+        android:id="@+id/ratingBar"
+        style="@style/RatingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userName"
+        android:layout_toRightOf="@+id/userThumbnailCnt"
+        android:numStars="5"
+        android:rating="0.0"
+        android:layout_marginTop="20dp"
+        android:stepSize="1.0" />
+    <TabHost
+        android:id="@+id/TabHost01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userThumbnailCnt" >
+
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/mid_bar" />
+
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="65dp" >
+
+                <LinearLayout
+                    android:id="@+id/tripDetailsTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/fromText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:drawableLeft="@drawable/trip_pool"
+                        android:textColor="#000000"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textAlignment="gravity"
+                        android:textSize="20dip" />
+
+                    <TextView
+                        android:id="@+id/dateText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_marginTop="10dip"
+                        android:layout_marginBottom="5dip"
+                        android:drawableLeft="@drawable/details_time"
+                        android:ellipsize="none"
+                        android:singleLine="true"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textAlignment="gravity"
+                        android:textColor="#000000"
+                        android:textSize="15dip" />
+
+                    <RelativeLayout
+                        android:id="@+id/isSmokingCnt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginRight="30dp"
+                        android:background="@drawable/details"
+                        android:orientation="horizontal" >
+
+                        <RelativeLayout
+                            android:id="@+id/tempCnt"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="30dp"
+                            android:gravity="center_horizontal"
+                            android:orientation="horizontal" 
+                            android:layout_above="@+id/actionTab"
+                            android:layout_alignParentBottom="true">
+
+                            <CheckBox
+                                android:id="@+id/friendshekcbox"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:clickable="false"
+                                android:visibility="invisible"
+                                android:checked="true"
+                                android:layout_marginLeft="30dp" />
+
+                            <CheckBox
+                                android:id="@+id/womenchekcbox"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:clickable="false"
+                                android:checked="true"
+                                android:visibility="invisible"
+                                android:layout_toRightOf="@+id/friendshekcbox" />
+
+                            <CheckBox
+                                android:id="@+id/smokingchekcbox"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginRight="30dp"
+                                android:clickable="false"
+                                android:checked="true"
+                                android:visibility="invisible"
+                                android:layout_toRightOf="@+id/womenchekcbox" />
+                        </RelativeLayout>
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/actionTab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" 
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginRight="30dp">
+
+                        <ImageButton
+                            android:id="@+id/join"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@drawable/list_selector_holo_light"
+                            android:src="@drawable/join" 
+                            android:layout_weight="1"
+                            android:layout_marginRight="30dp"
+                            />
+
+                        <ImageButton
+                            android:id="@+id/message"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@drawable/list_selector_holo_light"
+                            android:src="@drawable/massage" 
+                            android:layout_weight="1"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+            <LinearLayout
+                android:id="@+id/commentTab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/comentText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text="" >
+                </TextView>
+            </LinearLayout>
+        </FrameLayout>
+    </TabHost>
+
+</RelativeLayout>
+</ScrollView>

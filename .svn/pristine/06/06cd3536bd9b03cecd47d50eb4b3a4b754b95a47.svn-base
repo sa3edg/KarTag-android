@@ -1,0 +1,222 @@
+package com.kartag.client.processing;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONObject;
+
+import android.util.Log;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import com.kartag.client.common.Response;
+import com.kartag.persistence.model.bo.Community;
+import com.kartag.persistence.model.bo.Message;
+import com.kartag.persistence.model.bo.Notification;
+import com.kartag.persistence.model.bo.Pool;
+import com.kartag.persistence.model.bo.Reply;
+import com.kartag.persistence.model.bo.Trip;
+
+public class ResponseProcessingHelper {
+
+	private static ResponseProcessingHelper self = null;
+
+	private ResponseProcessingHelper() {
+
+	}
+
+	public static ResponseProcessingHelper getInstance() {
+		if (self == null) {
+			self = new ResponseProcessingHelper();
+		}
+		return self;
+	}
+
+	public Object handleResponse(String orderType, String response)
+			throws Exception {
+
+		// JSONArray arr = new JSONArray(response);
+		JSONObject json = new JSONObject(response);// arr.getJSONObject(0);
+		String responseStatus = json.getString("result");
+
+		if (responseStatus.equals(Response.ERROR)) {
+			throw new Exception();
+		}
+		Log.i("response code", responseStatus);
+		String jsonArray = json.getString("data");
+
+		Log.i("response array", jsonArray);
+
+		if (com.kartag.client.common.Request.GET_OFFERS_REQUEST
+				.equals(orderType)) {
+
+			return handleGetOffersResponse(jsonArray);
+		} else if (com.kartag.client.common.Request.GET_REQUESTS_REQUEST
+				.equals(orderType)) {
+
+			return handleGetRequestsResponse(jsonArray);
+		}
+		// handle get community request
+		else if (com.kartag.client.common.Request.GET_COMMUNITIES
+				.equals(orderType)) {
+
+			return handleGetCommunitiesResponse(jsonArray);
+		}
+		// handle get user messages request and get user messages updates
+		else if (com.kartag.client.common.Request.GET_USER_MESSAGES_REQUEST
+				.equals(orderType)
+				|| com.kartag.client.common.Request.GET_USER_MESSAGES_UPDATES_REQUEST
+						.equals(orderType)) {
+
+			return handleGetMessagesResponse(jsonArray);
+		}
+		// handle get user messages request and get user messages updates
+		else if (com.kartag.client.common.Request.GET_USER_NOTIFICATION_REQUEST
+				.equals(orderType)
+				|| com.kartag.client.common.Request.GET_USER_NOTIFICATION_UPDATES_REQUEST
+						.equals(orderType)) {
+
+			return handleGetNotificationsResponse(jsonArray);
+		}
+		// handle user updates count
+		else if (com.kartag.client.common.Request.GET_MESSAGES_NOTIFICATION_COUNT_REQUEST
+				.equals(orderType)) {
+
+			return handleGetUserUpdatesResponse(jsonArray);
+		}
+		// handle boolean value in response node
+		else if (com.kartag.client.common.Request.ADD_TRIP_REQUEST
+				.equals(orderType)
+				|| com.kartag.client.common.Request.ADD_USER_REQUEST
+						.equals(orderType)
+				|| com.kartag.client.common.Request.ADD_MESSAGE_REQUEST
+						.equals(orderType)
+				|| com.kartag.client.common.Request.ADD_REPLY_REQUEST
+						.equals(orderType)
+				|| com.kartag.client.common.Request.ADD_FEEDBACK_REQUEST
+						.equals(orderType)
+				|| com.kartag.client.common.Request.DELETE_MESSAGE_REQUEST
+						.equals(orderType)
+				|| com.kartag.client.common.Request.RATE_TRIP_REQUEST
+						.equals(orderType)
+				|| com.kartag.client.common.Request.DELETE_TRIP_REQUEST
+						.equals(orderType)
+				|| com.kartag.client.common.Request.LOGIN_ORDER
+						.equals(orderType)
+				|| com.kartag.client.common.Request.CHANGE_PASSWORD
+						.equals(orderType)
+				|| com.kartag.client.common.Request.FORGET_PASSWORD
+						.equals(orderType)) {
+			return Boolean.valueOf(jsonArray);
+		}
+		// handle String value in response node
+		else if (com.kartag.client.common.Request.ACCEPT_TRIP_REQUEST
+				.equals(orderType)
+				|| com.kartag.client.common.Request.REJECT_TRIP_REQUEST
+						.equals(orderType)
+				|| com.kartag.client.common.Request.SEND_JOIN_TRIP_REQUEST
+						.equals(orderType)) {
+
+			return new String(jsonArray);
+		} else if (com.kartag.client.common.Request.GET_FILTERED_TRIPS_REQUEST
+				.equals(orderType)
+				|| com.kartag.client.common.Request.GET_USER_TRIPS_REQUEST
+						.equals(orderType)) {
+
+			return handleGetFilteredTripsResponse(jsonArray);
+		} else if (com.kartag.client.common.Request.GET_MESSAGE_REPLIES_REQUEST
+				.equals(orderType)) {
+
+			return handleGetRepliesResponse(jsonArray);
+		} else if (com.kartag.client.common.Request.GET_MESSAGES_NOTIFICATION_COUNT_REQUEST
+				.equals(orderType)) {
+
+			return handleGetUserUpdatesResponse(jsonArray);
+		}
+
+		return null;
+	}
+
+	private List<Pool> handleGetRequestsResponse(String jsonArray)
+			throws Exception {
+		Type collectionType = new TypeToken<ArrayList<Pool>>() {
+		}.getType();
+		List<Pool> poolsList = new Gson().fromJson(jsonArray, collectionType);
+
+		return poolsList;
+	}
+
+	private List<Trip> handleGetFilteredTripsResponse(String jsonArray)
+			throws Exception {
+		Type collectionType = new TypeToken<ArrayList<Trip>>() {
+		}.getType();
+		List<Trip> tripsList = new Gson().fromJson(jsonArray, collectionType);
+
+		return tripsList;
+	}
+
+	private List<Pool> handleGetOffersResponse(String jsonArray)
+			throws Exception {
+		Type collectionType = new TypeToken<ArrayList<Pool>>() {
+		}.getType();
+		List<Pool> trips = new Gson().fromJson(jsonArray, collectionType);
+
+		return trips;
+	}
+
+	private List<Message> handleGetMessagesResponse(String jsonArray)
+			throws Exception {
+		Type collectionType = new TypeToken<ArrayList<Message>>() {
+		}.getType();
+		List<Message> messages = new Gson().fromJson(jsonArray, collectionType);
+
+		return messages;
+	}
+
+	private List<Reply> handleGetRepliesResponse(String jsonArray)
+			throws Exception {
+		Type collectionType = new TypeToken<ArrayList<Reply>>() {
+		}.getType();
+		List<Reply> messages = new Gson().fromJson(jsonArray, collectionType);
+
+		return messages;
+	}
+
+	private List<Notification> handleGetNotificationsResponse(String jsonArray)
+			throws Exception {
+		Type collectionType = new TypeToken<ArrayList<Notification>>() {
+		}.getType();
+		List<Notification> notifications = new Gson().fromJson(jsonArray,
+				collectionType);
+
+		return notifications;
+	}
+
+	private String[] handleGetUserUpdatesResponse(String jsonArray)
+			throws Exception {
+		if (jsonArray == null || "".equals(jsonArray)) {
+			return null;
+		}
+		String[] updates = jsonArray.split(",");
+		String[] userUpdates = new String[3];
+		userUpdates[0] = updates[0].substring(updates[0].indexOf("=") + 1,
+				updates[0].length());
+		userUpdates[1] = updates[1].substring(updates[1].indexOf("=") + 1,
+				updates[1].length());
+		userUpdates[2] = updates[2].substring(updates[2].indexOf("=") + 1,
+				updates[2].length());
+		return userUpdates;
+	}
+
+	private List<Community> handleGetCommunitiesResponse(String jsonArray)
+			throws Exception {
+		Type collectionType = new TypeToken<ArrayList<Community>>() {
+		}.getType();
+		List<Community> messages = new Gson().fromJson(jsonArray,
+				collectionType);
+
+		return messages;
+	}
+
+}

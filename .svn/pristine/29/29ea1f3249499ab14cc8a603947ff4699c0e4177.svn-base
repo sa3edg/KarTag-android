@@ -1,0 +1,120 @@
+package com.kartag.util;
+
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.facebook.Response;
+import com.facebook.model.GraphFriend;
+import com.facebook.model.GraphObject;
+import com.facebook.model.GraphUser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.google.gson.JsonArray;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.kartag.persistence.model.bo.Trip;
+import com.kartag.persistence.model.bo.User;
+
+public class UserUtils {
+	
+	public static Map<String, GraphUser> getFriendsTable(List<GraphUser> users)
+	{
+		Map<String, GraphUser> friends = new LinkedHashMap<String, GraphUser>();
+		for(GraphUser friend : users)
+		{
+			friends.put(friend.getId(), friend);
+		}
+		return friends;
+	}
+	
+	public static Map<String, GraphFriend> createFriendsMap(Response response) throws Exception
+	{
+		GraphObject graphObj = response.getGraphObject();
+		JSONObject jsonObj = graphObj.getInnerJSONObject();
+		String jsonArray = jsonObj.getString("data");
+		Type collectionType = new TypeToken<ArrayList<GraphFriend>>() {
+		}.getType();
+		
+		
+		List<GraphFriend> friendsOfFriendsList = new Gson()
+				.fromJson(jsonArray, collectionType);
+		Map<String, GraphFriend> friendsOfFriends = new LinkedHashMap<String, GraphFriend>();
+		for(GraphFriend friend : friendsOfFriendsList)
+		{
+			friendsOfFriends.put(friend.getUid(), friend);
+		}
+		return friendsOfFriends;
+	}
+	
+	public static Map<String, GraphFriend> createFriendsOfFriendsMap(Response response) throws Exception
+	{
+		GraphObject graphObj = response.getGraphObject();
+		JSONObject jsonObj = graphObj.getInnerJSONObject();
+		String jsonArray = jsonObj.getString("data");
+		Type collectionType = new TypeToken<ArrayList<GraphFriend>>() {
+		}.getType();
+		
+		
+		List<GraphFriend> friendsOfFriendsList = new Gson()
+				.fromJson(jsonArray, collectionType);
+		Map<String, GraphFriend> friendsOfFriends = new LinkedHashMap<String, GraphFriend>();
+		for(GraphFriend friend : friendsOfFriendsList)
+		{
+			if(!User.getInstance().getProfile().getFriends().containsKey(friend.getUid()) && 
+					!User.getInstance().getProfile().getId().equals(friend.getUid()))
+			{
+			   friendsOfFriends.put(friend.getUid(), friend);
+			}
+		}
+		return friendsOfFriends;
+	}
+
+	public static int getMutualFreindsCount(Response response) throws Exception
+	{
+		GraphObject graphObj = response.getGraphObject();
+		JSONObject jsonObj = graphObj.getInnerJSONObject();
+		JSONArray array = jsonObj.getJSONArray("data");
+		int count = array.length();
+		return count;
+//		String jsonArray = jsonObj.getString("data");
+//		Type collectionType = new TypeToken<ArrayList<GraphFriend>>() {
+//		}.getType();
+//		
+//		
+//		List<GraphFriend> friendsOfFriendsList = new Gson()
+//				.fromJson(jsonArray, collectionType);
+//		Map<String, GraphFriend> friendsOfFriends = new LinkedHashMap<String, GraphFriend>();
+//		for(GraphFriend friend : friendsOfFriendsList)
+//		{
+//			friendsOfFriends.put(friend.getUid(), friend);
+//		}
+//		return friendsOfFriends;
+	}
+	
+	public static Bitmap getProfilePicture(String userId) throws Exception
+	{
+		URL img_value = null;
+		img_value = new URL("http://graph.facebook.com/"+userId+"/picture?type=square");
+		Bitmap mIcon1 = BitmapFactory.decodeStream(img_value.openConnection().getInputStream());
+		return mIcon1;
+	}
+	public static String getProfilePictureURL(String userId)
+	{
+		return "http://graph.facebook.com/"+userId+"/picture?type=square";
+	}
+
+}

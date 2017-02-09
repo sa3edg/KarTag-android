@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/editTextUserNameToLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/userName"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/editTextPasswordToLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        />
+
+    <Spinner
+        android:id="@+id/selctCommunity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:prompt="@string/selectCommunity" />
+    <Button
+        android:id="@+id/buttonSignIn"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/signIn"
+        android:textAlignment="gravity"
+        android:gravity="center"
+        android:background="@color/nameTextColor"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="5dip"
+        />
+    <Button
+        android:id="@+id/buttonSignup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/register"
+        android:textAlignment="gravity"
+        android:gravity="center"
+        android:background="@color/nameTextColor"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="5dip"
+        />
+    <Button
+        android:id="@+id/buttonForgetPassword"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/forgetPassword"
+        android:textAlignment="gravity"
+        android:gravity="center"
+        android:background="@color/nameTextColor"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="5dip"
+        />
+    <Button
+        android:id="@+id/buttonChangePassword"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/changePassword"
+        android:textAlignment="gravity"
+        android:gravity="center"
+        android:background="@color/nameTextColor"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="5dip"
+        />
+    <Button
+        android:id="@+id/buttonSignInCancel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel"
+        android:textAlignment="gravity"
+        android:gravity="center"
+        android:background="@color/nameTextColor"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="5dip"
+        />
+
+</LinearLayout>
